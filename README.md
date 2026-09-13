@@ -80,18 +80,16 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\nvim\.git*", "$env:LOCALAPPDATA\n
 
 ---
 
-### ⚙️ Integração com o Universal Environment (Submódulo)
+### ⚙️ Integração com o Universal Environment
 
-Se você já utiliza o orquestrador [Universal Environment](https://github.com/GabrielFrigo4/environment):
+Quando operado a partir do [Universal Environment](https://github.com/GabrielFrigo4/environment):
 
 ```sh
-# Sincronização automática via Profile
-make sync
+# Atualizar a suíte de editores com o upstream
+make uped
 
-# Ou criação manual de links
-mkdir -p "${HOME}/.config/nvim"
-ln -sf "$(pwd)/init.lua" "${HOME}/.config/nvim/init.lua"
-ln -sf "$(pwd)/lua" "${HOME}/.config/nvim/lua"
+# Implantar o repositório no destino canônico (~/.config/nvim)
+make deploy
 ```
 
 ---
