@@ -35,8 +35,7 @@ O repositório `nvim` provê um ambiente de desenvolvimento modal moderno basead
 3. **Zero Comentários Narrativos:** Mantenha a arquitetura de comentários em 3 camadas e sem comentários inline óbvios.
 4. **Zero Secrets:** Tokens e segredos não pertencem ao repositório do Neovim.
 5. **Hermetismo de Produção & Invariante `rm -rf .agents`:** Repositório 100% autônomo. Zero acoplamento de código de produção a `.agents/` ou `skills/` (o editor opera plenamente se `.agents/` for deletado).
-
----
+6. **Bancada de Desenvolvimento vs. Runtimes de Produção:** Em produção, o NeoVim reside e opera soberanamente em `~/.config/nvim`. O repositório central `Environment` é exclusivamente uma bancada de desenvolvimento. NUNCA configure links simbólicos ou variáveis que apontem para `~/Documents/Environment/Editor/NeoVim`.
 
 ---
 
@@ -52,14 +51,16 @@ Se durante a execução de qualquer tarefa (seja criação de novas features, co
     - **Banners Estruturais:** Ajustar réguas para exatamente 64 hífens no topo ou 32 caracteres com `### ` no corpo.
     - **Portabilidade POSIX:** Substituir bashismos (`[[ ]]`, `&>`, arrays, `source`) por sintaxe estrita POSIX `/bin/sh`.
     - **Shebang Universal:** Garantir sempre `#!/usr/bin/env sh` ou `#!/usr/bin/env python3`.
-    - **Sequências ANSI:** Substituir octais crípticos (``) e `printf` desnecessário por `[ -t 1 ] && echo -n $'\e...'`.
+    - **Sequências ANSI:** Substituir octais crípticos (` `) e `printf` desnecessário por `[ -t 1 ] && echo -n $'\e...'`.
     - **Redirecionamento Seguro:** Envolver destinos em aspas duplas (ex: `> "/dev/null" 2>&1`).
     - **Makefiles:** Assegurar cabeçalho `.POSIX: .SILENT:`, `MAKEFLAGS += --no-print-directory -s`, alinhamento estético de variáveis e zero `@` redundante.
     - **Permissões Canônicas:** Aplicar 4 dígitos octais (`chmod 0755`, `chmod 0644`, `chmod 0700`, `chmod 0600`).
 
 ## 📖 Referências Obrigatórias
 
+Antes de qualquer modificação neste ecossistema, consulte:
+
 - **[ENVIRONMENT.md](ENVIRONMENT.md)**: Arquitetura global do ecossistema
-- **[PRINCIPLES.md](PRINCIPLES.md)**: Os 18 Princípios de Engenharia UNIX + Clean Code
+- **[PRINCIPLES.md](PRINCIPLES.md)**: Os 21 Princípios de Engenharia UNIX + Clean Code
 - **[.agents/rules/principles.md](.agents/rules/principles.md)**: Regras específicas para o NeoVim
 - **[.agents/skills/](.agents/skills/)**: Runbooks operacionais do NeoVim
