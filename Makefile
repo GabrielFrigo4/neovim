@@ -13,12 +13,16 @@ MAKEFLAGS += --no-print-directory -s
 ### HELP & DOCUMENTATION
 ### ================================
 help:
-	echo "⚡ NeoVim — Configuração Modular FHS em Lua"
+	cmd() { printf "    \033[36mmake %-22s\033[0m %s\n" "$$1" "$$2"; }; \
+	sec() { printf "\n  \033[1;33m%s\033[0m\n" "$$1"; }; \
+	printf "\n  \033[1;37mNeoVim — Configuração Modular FHS em Lua & LSP\033[0m\n"; \
+	printf "  ============================================================\n"; \
+	sec "Qualidade & Validação:"; \
+	cmd "test"           "Valida inicialização em modo headless"; \
+	cmd "headless"       "Executa boot limpo headless do Neovim"; \
+	cmd "ci"             "Executa suíte de validação local do NeoVim"; \
 	echo ""
-	echo "Comandos disponíveis:"
-	echo "  make test     - Valida inicialização em modo headless"
-	echo "  make ci       - Executa suite de validação local"
-	echo ""
+
 
 ### ================================
 ### TESTING & VALIDATION

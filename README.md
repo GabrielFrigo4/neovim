@@ -24,6 +24,7 @@ Este repositório contém a configuração oficial do **NeoVim** de Gabriel Frig
 
 | Diretório / Arquivo                | Descrição                                                                       |
 | :--------------------------------- | :------------------------------------------------------------------------------ |
+| [`neovim.sh`](neovim.sh)           | Interface unificada de componente (CLI para test, doctor, update)               |
 | [`init.lua`](init.lua)             | Ponto de entrada que carrega em ordem `lib`, `etc` e `opt`                      |
 | [`lua/etc/`](lua/etc/)             | Opções do editor (`options.lua`), atalhos (`keymaps.lua`), autocmds e clipboard |
 | [`lua/lib/`](lua/lib/)             | Bibliotecas auxiliares e utilitários (`nvim.lua`)                               |
