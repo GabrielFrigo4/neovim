@@ -34,6 +34,7 @@ O repositório `nvim` provê um ambiente de desenvolvimento modal moderno basead
 2. **Tema Fallback:** Se `kanagawa` não estiver instalado, o editor deve fazer fallback para `habamax` ou `default` sem lançar erro.
 3. **Zero Comentários Narrativos:** Mantenha a arquitetura de comentários em 3 camadas e sem comentários inline óbvios.
 4. **Zero Secrets:** Tokens e segredos não pertencem ao repositório do Neovim.
+5. **Hermetismo de Produção & Invariante `rm -rf .agents`:** Repositório 100% autônomo. Zero acoplamento de código de produção a `.agents/` ou `skills/` (o editor opera plenamente se `.agents/` for deletado).
 
 ---
 
