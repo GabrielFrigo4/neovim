@@ -3,8 +3,9 @@
 > Configuração modular, declarativa e resiliente do NeoVim com arquitetura FHS em Lua, Lazy.nvim, Mason LSP e tema Kanagawa.
 
 [![Environment](https://img.shields.io/badge/🏛️_Environment-Hub-blue)](https://github.com/GabrielFrigo4/environment)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Lua](https://img.shields.io/badge/lua-5.1%20%2F%20luajit-blue)](init.lua)
+[![NeoVim](https://img.shields.io/badge/NeoVim-0.10%2B-green?logo=neovim&logoColor=white)](https://neovim.io/)
+[![Lua](https://img.shields.io/badge/Lua-5.1_%2F_LuaJIT-blue?logo=lua&logoColor=white)](init.lua)
+[![License](https://img.shields.io/badge/License-MIT-green?logo=open-source-initiative&logoColor=white)](LICENSE)
 
 ---
 
