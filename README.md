@@ -6,6 +6,7 @@
 [![NeoVim](https://img.shields.io/badge/NeoVim-0.10%2B-green?logo=neovim&logoColor=white)](https://neovim.io/)
 [![Lua](https://img.shields.io/badge/Lua-5.1_%2F_LuaJIT-blue?logo=lua&logoColor=white)](init.lua)
 [![License](https://img.shields.io/badge/License-MIT-green?logo=open-source-initiative&logoColor=white)](LICENSE)
+[![Roadmap](https://img.shields.io/badge/🗺️_Roadmap-TODO.md-teal)](TODO.md)
 
 ---
 
@@ -24,6 +25,7 @@ Este repositório contém a configuração oficial do **NeoVim** de Gabriel Frig
 
 | Diretório / Arquivo                | Descrição                                                                       |
 | :--------------------------------- | :------------------------------------------------------------------------------ |
+| [`TODO.md`](TODO.md)               | Roadmap estratégico, matriz de status e backlog de evolução                     |
 | [`neovim.sh`](neovim.sh)           | Interface unificada de componente (CLI para test, doctor, update)               |
 | [`init.lua`](init.lua)             | Ponto de entrada que carrega em ordem `lib`, `etc` e `opt`                      |
 | [`lua/etc/`](lua/etc/)             | Opções do editor (`options.lua`), atalhos (`keymaps.lua`), autocmds e clipboard |
