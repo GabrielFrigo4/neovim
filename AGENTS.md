@@ -38,6 +38,7 @@ O repositório `nvim` provê um ambiente de desenvolvimento modal moderno basead
 6. **Bancada de Desenvolvimento vs. Runtimes de Produção:** Em produção, o NeoVim reside e opera soberanamente em `~/.config/nvim`. O repositório central `Environment` é exclusivamente uma bancada de desenvolvimento. NUNCA configure links simbólicos ou variáveis que apontem para `~/Documents/Environment/Editor/NeoVim`.
 7. **Invariante de Clonagem "Out-of-the-Box" (Zero-Tweaks Git Invariant):** O NeoVim deve funcionar imediatamente após `git clone`. Modos octais no Git Index DEVEM ser rigorosamente `0755` para `neovim.sh` e hooks, e `0644` para arquivos `.lua` e documentação.
 8. **Governança de Roadmap (Opção C):** O repositório mantém seu [TODO.md](TODO.md) atualizado com a Matriz de Status e Backlog de Evolução, sincronizado com o badge no `README.md`.
+9. **Refatoração Sem Legado / Soberania Monousuário (Clean-Break / Zero-Cruft Invariant):** O ecossistema é estritamente pessoal, governado e operado por um único desenvolvedor soberano (Gabriel Frigo). É terminantemente proibido manter "sujeira" de retrocompatibilidade, shims temporários, wrappers obsoletos, seções de compatibilidade legada ou aliases de transição ao renomear variáveis, comandos, funções, diretórios ou arquivos, salvo se expressamente ordenado pelo usuário. Toda refatoração deve ser atômica, direta, definitiva e limpa (_clean break_), expurgando o identificador antigo integralmente da base de código.
 
 ---
 
@@ -59,6 +60,7 @@ Se durante a execução de qualquer tarefa (seja criação de novas features, co
     - **Permissões Canônicas:** Aplicar 4 dígitos octais (`chmod 0755`, `chmod 0644`, `chmod 0700`, `chmod 0600`).
     - **Invariante Out-of-the-Box:** Garantir modos octais corretos no Git Index sem requerer intervenção manual pós-clone.
     - **Curadoria Cognitiva:** Capturar decisões estruturais e regras tácitas em skills locais compactas (`.agents/skills/`), mantendo-as atualizadas e expurgando runbooks obsoletos para evitar débito cognitivo, preservando sempre o hermetismo de produção (`rm -rf .agents`).
+    - **Refatoração Sem Legado:** Expurgar sumariamente aliases obsoletos, variáveis mortas e shims de compatibilidade deixados para trás em renomeações passadas, mantendo o código puro e direto.
 
 ## 📖 Referências Obrigatórias
 
