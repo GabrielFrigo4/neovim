@@ -6,6 +6,17 @@ set -eu
 
 _NVIM_ROOT="$(cd "$(dirname "$0")" && pwd)"
 
+_self_heal_perms() {
+	if [ -d "${_NVIM_ROOT}/.git" ] && command -v git > "/dev/null" 2>&1; then
+		git -C "${_NVIM_ROOT}" config core.hooksPath .githooks 2> "/dev/null" || true
+	fi
+	if [ -d "${_NVIM_ROOT}/.githooks" ]; then
+		chmod 0755 "${_NVIM_ROOT}/.githooks/"* 2> "/dev/null" || true
+	fi
+	[ -f "${_NVIM_ROOT}/neovim.sh" ] && chmod 0755 "${_NVIM_ROOT}/neovim.sh" 2> "/dev/null" || true
+}
+_self_heal_perms
+
 _nvim_help() {
 	cat <<- EOF
 		NeoVim — Interface Unificada de Componente

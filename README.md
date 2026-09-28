@@ -7,6 +7,7 @@
 [![Lua](https://img.shields.io/badge/Lua-5.1_%2F_LuaJIT-blue?logo=lua&logoColor=white)](init.lua)
 [![License](https://img.shields.io/badge/License-MIT-green?logo=open-source-initiative&logoColor=white)](LICENSE)
 [![Roadmap](https://img.shields.io/badge/🗺️_Roadmap-TODO.md-teal)](TODO.md)
+[![Contributing](https://img.shields.io/badge/🤝_Contributing-CONTRIBUTING.md-orange)](CONTRIBUTING.md)
 
 ---
 
@@ -23,17 +24,18 @@ Este repositório contém a configuração oficial do **NeoVim** de Gabriel Frig
 
 ## 📁 Catálogo da Estrutura
 
-| Diretório / Arquivo                | Descrição                                                                       |
-| :--------------------------------- | :------------------------------------------------------------------------------ |
-| [`TODO.md`](TODO.md)               | Roadmap estratégico, matriz de status e backlog de evolução                     |
-| [`neovim.sh`](neovim.sh)           | Interface unificada de componente (CLI para test, doctor, update)               |
-| [`init.lua`](init.lua)             | Ponto de entrada que carrega em ordem `lib`, `etc` e `opt`                      |
-| [`lua/etc/`](lua/etc/)             | Opções do editor (`options.lua`), atalhos (`keymaps.lua`), autocmds e clipboard |
-| [`lua/lib/`](lua/lib/)             | Bibliotecas auxiliares e utilitários (`nvim.lua`)                               |
-| [`lua/opt/`](lua/opt/)             | Plugins: `lazy.lua`, `lsp.lua` (Mason), `treesitter.lua`, `plug.lua`            |
-| [`AGENTS.md`](AGENTS.md)           | Briefing arquitetural para agentes de inteligência artificial                   |
-| [`PRINCIPLES.md`](PRINCIPLES.md)   | Os 18 Princípios de Engenharia UNIX + Clean Code                                |
-| [`ENVIRONMENT.md`](ENVIRONMENT.md) | Manifesto do ecossistema Universal Environment                                  |
+| Diretório / Arquivo                  | Descrição                                                                       |
+| :----------------------------------- | :------------------------------------------------------------------------------ |
+| [`TODO.md`](TODO.md)                 | Roadmap estratégico, matriz de status e backlog de evolução                     |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Guia de contribuição, configuração de ganchos Git e quality gates               |
+| [`neovim.sh`](neovim.sh)             | Interface unificada de componente (CLI para test, doctor, update)               |
+| [`init.lua`](init.lua)               | Ponto de entrada que carrega em ordem `lib`, `etc` e `opt`                      |
+| [`lua/etc/`](lua/etc/)               | Opções do editor (`options.lua`), atalhos (`keymaps.lua`), autocmds e clipboard |
+| [`lua/lib/`](lua/lib/)               | Bibliotecas auxiliares e utilitários (`nvim.lua`)                               |
+| [`lua/opt/`](lua/opt/)               | Plugins: `lazy.lua`, `lsp.lua` (Mason), `treesitter.lua`, `plug.lua`            |
+| [`AGENTS.md`](AGENTS.md)             | Briefing arquitetural para agentes de inteligência artificial                   |
+| [`PRINCIPLES.md`](PRINCIPLES.md)     | Os 18 Princípios de Engenharia UNIX + Clean Code                                |
+| [`ENVIRONMENT.md`](ENVIRONMENT.md)   | Manifesto do ecossistema Universal Environment                                  |
 
 ---
 
@@ -103,3 +105,17 @@ make deploy
 ```sh
 nvim --headless -c "quit"
 ```
+
+---
+
+## 🚀 Setup do Projeto & Ganchos Git
+
+Para configurar o ambiente de desenvolvimento local, ativar os quality gates automáticos e validar a integridade do repositório:
+
+```sh
+make hooks   # Configura .githooks e permissões canônicas
+make test    # Valida inicialização em modo headless (nvim --headless)
+make ci      # Bateria completa de validação local
+```
+
+> 🤝 **Instruções Detalhadas:** Consulte o [CONTRIBUTING.md](CONTRIBUTING.md) para convenções de commits, arquitetura FHS em Lua, regras de plugins e quality gates.
