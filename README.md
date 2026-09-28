@@ -34,7 +34,7 @@ Este repositório contém a configuração oficial do **NeoVim** de Gabriel Frig
 | [`lua/lib/`](lua/lib/)               | Bibliotecas auxiliares e utilitários (`nvim.lua`)                               |
 | [`lua/opt/`](lua/opt/)               | Plugins: `lazy.lua`, `lsp.lua` (Mason), `treesitter.lua`, `plug.lua`            |
 | [`AGENTS.md`](AGENTS.md)             | Briefing arquitetural para agentes de inteligência artificial                   |
-| [`PRINCIPLES.md`](PRINCIPLES.md)     | Os 18 Princípios de Engenharia UNIX + Clean Code                                |
+| [`PRINCIPLES.md`](PRINCIPLES.md)     | Os 22 Princípios de Engenharia UNIX + Clean Code                                |
 | [`ENVIRONMENT.md`](ENVIRONMENT.md)   | Manifesto do ecossistema Universal Environment                                  |
 
 ---
