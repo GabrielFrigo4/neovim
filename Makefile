@@ -7,7 +7,7 @@ MAKEFLAGS += --no-print-directory -s
 # Makefile: NeoVim Modal Editor
 # ----------------------------------------------------------------
 
-.PHONY: help hooks test headless ci
+.PHONY: help hooks test headless format prettier ci
 
 ### ================================
 ### HELP & DOCUMENTATION
@@ -23,6 +23,8 @@ help:
 	sec "Qualidade & Validação:"; \
 	cmd "test"           "Valida inicialização em modo headless"; \
 	cmd "headless"       "Executa boot limpo headless do Neovim"; \
+	cmd "format"         "Formata documentações Markdown com Prettier"; \
+	cmd "prettier"       "Formata documentações Markdown com Prettier"; \
 	cmd "ci"             "Executa suíte de validação local do NeoVim"; \
 	echo ""
 
@@ -48,6 +50,12 @@ headless:
 	else \
 		echo "ℹ️  nvim não encontrado no PATH; ignorando teste headless."; \
 	fi
+
+format: prettier
+	echo "✅ Formatação concluída!"
+
+prettier:
+	if command -v prettier > "/dev/null" 2>&1; then prettier --write "**/*.md" 2> "/dev/null" || true; elif command -v npx > "/dev/null" 2>&1; then npx prettier --write "**/*.md" 2> "/dev/null" || true; fi
 
 ci: test
 	echo "🚀 NeoVim 100% pronto para produção!"
