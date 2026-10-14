@@ -21,13 +21,13 @@
 
 ### 1. ⚡ Desempenho & Otimização de Inicialização
 
-- [ ] Otimizar lazy-loading de plugins pesados visando boot < 25ms.
-- [ ] Realizar profiling de startup contínuo no CI (`nvim --startuptime`).
+- [x] Otimizar lazy-loading de plugins pesados visando boot < 25ms.
+- [x] Realizar profiling de startup contínuo no CI (`nvim --startuptime` / `make bench`).
 
 ### 2. 🛠️ Cobertura de Linguagens & Mason
 
-- [ ] Adicionar receitas Mason pré-configuradas para C23, Go, Rust, Lua e Shell POSIX.
-- [ ] Refinar integração de formatadores via `conform.nvim` ou formatadores nativos LSP.
+- [x] Adicionar receitas Mason pré-configuradas para C23, Go, Rust, Lua e Shell POSIX.
+- [x] Refinar integração de formatadores via `conform.nvim` ou formatadores nativos LSP.
 
 ### 3. 🌐 Experiência Multiplataforma & Terminal
 

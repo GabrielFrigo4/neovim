@@ -46,13 +46,19 @@ Nvim = {
 
 	plug = {
 		get = function(...)
-			Nvim.func['plug#'](...)
+			if vim.fn.exists('*plug#') == 1 then
+				Nvim.func['plug#'](...)
+			end
 		end,
 		init = function()
-			vim.call('plug#begin')
+			if vim.fn.exists('*plug#begin') == 1 then
+				vim.call('plug#begin')
+			end
 		end,
 		close = function()
-			vim.call('plug#end')
+			if vim.fn.exists('*plug#end') == 1 then
+				vim.call('plug#end')
+			end
 		end,
 	},
 

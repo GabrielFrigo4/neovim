@@ -17,7 +17,7 @@ Este runbook orienta desenvolvedores e agentes de inteligência artificial na ma
         - `init.lua`: Ponto de entrada que delega o carregamento na ordem `lib` ➔ `etc` ➔ `opt`.
         - `lua/etc/`: Opções gerais (`options.lua`), atalhos globais (`keymaps.lua`), eventos (`autocmds.lua`) e integração com clipboard.
         - `lua/lib/`: Utilitários auxiliares (`nvim.lua`).
-        - `lua/opt/`: Gerenciador Lazy.nvim (`lazy.lua`), servidores Mason LSP (`lsp.lua`), TreeSitter (`treesitter.lua`) e plugins sob demanda.
+        - `lua/opt/`: Gerenciador Lazy.nvim (`lazy.lua`), servidores Mason LSP (`mason.lua`), TreeSitter (`treesitter.lua`) e plugins sob demanda.
 2. **Resiliência e Proteção com `pcall`:** Módulos de plugins em `lua/opt/init.lua` são carregados com tratamento defensivo de erro (`pcall`) para garantir inicialização sem falhas mesmo na ausência de pacotes externos.
 3. **Zero Symlinks Manuais:** O repositório opera como clone soberano em `${HOME}/.config/nvim` (Unix/MSYS2) ou `%LOCALAPPDATA%\nvim` (Windows nativo).
 

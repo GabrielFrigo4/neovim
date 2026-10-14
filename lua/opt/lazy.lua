@@ -16,9 +16,16 @@ lazy.setup({
 			lazy = false,
 			priority = 1000,
 			config = function()
-				local ok = pcall(Nvim.cmd.colorscheme, "kanagawa-wave")
-				if not ok then
-					pcall(Nvim.cmd.colorscheme, "habamax")
+				local is_tty = vim.env.RAW_TTY == "1" or vim.env.TERM == "linux" or vim.env.TERM == "cons25" or not vim.opt.termguicolors:get()
+				if is_tty then
+					local ok = pcall(Nvim.cmd.colorscheme, "habamax")
+					if not ok then pcall(Nvim.cmd.colorscheme, "default") end
+				else
+					local ok = pcall(Nvim.cmd.colorscheme, "kanagawa-wave")
+					if not ok then
+						local fallback_ok = pcall(Nvim.cmd.colorscheme, "habamax")
+						if not fallback_ok then pcall(Nvim.cmd.colorscheme, "default") end
+					end
 				end
 			end,
 		},
@@ -27,14 +34,22 @@ lazy.setup({
 			version = "*",
 			dependencies = { 'nvim-tree/nvim-web-devicons' },
 			config = function()
-				require('lualine').setup({
-					options = { theme = 'kanagawa' }
-				})
-			end
+				local is_tty = vim.env.RAW_TTY == "1" or vim.env.TERM == "linux" or vim.env.TERM == "cons25" or not vim.opt.termguicolors:get()
+				local ok, lualine = pcall(require, 'lualine')
+				if ok then
+					lualine.setup({
+						options = {
+							theme = is_tty and 'auto' or 'kanagawa',
+							icons_enabled = not is_tty,
+						},
+					})
+				end
+			end,
 		},
 		{
 			"lukas-reineke/indent-blankline.nvim",
 			version = "*",
+			event = { "BufReadPost", "BufNewFile" },
 			main = "ibl",
 			opts = {},
 		},
@@ -44,8 +59,18 @@ lazy.setup({
 		-- ================================
 		{
 			"nvim-treesitter/nvim-treesitter",
-			lazy = false,
+			event = { "BufReadPost", "BufNewFile" },
+			cmd = { "TSUpdate", "TSInstall", "TreeSitterSetup" },
 			build = ":TSUpdate",
+			config = function()
+				local ok, configs = pcall(require, "nvim-treesitter.configs")
+				if ok then
+					configs.setup({
+						highlight = { enable = true },
+						indent = { enable = true },
+					})
+				end
+			end,
 		},
 		{
 			"sheerun/vim-polyglot",
@@ -62,14 +87,11 @@ lazy.setup({
 			"nvim-tree/nvim-tree.lua",
 			version = "*",
 			dependencies = { "nvim-tree/nvim-web-devicons" },
-			lazy = false,
+			cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeFocus", "NvimTreeFindFile" },
 			opts = {
 				sort = { sorter = "case_sensitive" },
 				view = { width = 30 },
-				renderer = {
-					group_empty = true,
-					indent_markers = { enable = true },
-				},
+				renderer = { group_empty = true, indent_markers = { enable = true } },
 				filters = { dotfiles = false },
 			},
 			config = function(_, opts)
@@ -80,7 +102,7 @@ lazy.setup({
 			"stevearc/oil.nvim",
 			version = "*",
 			dependencies = { "echasnovski/mini.icons" },
-			lazy = false,
+			cmd = { "Oil" },
 			opts = {},
 		},
 
@@ -91,7 +113,7 @@ lazy.setup({
 			'nvim-telescope/telescope.nvim',
 			version = "*",
 			dependencies = { 'nvim-lua/plenary.nvim' },
-			lazy = false,
+			cmd = { "Telescope" },
 			config = function()
 				require('telescope').setup()
 			end,
@@ -114,12 +136,10 @@ lazy.setup({
 			"NeogitOrg/neogit",
 			version = "*",
 			dependencies = {
-				"nvim-lua/plenary.nvim",
-				"sindrets/diffview.nvim",
-				"nvim-telescope/telescope.nvim",
-				"ibhagwan/fzf-lua",
-				"echasnovski/mini.pick",
+				"nvim-lua/plenary.nvim", "sindrets/diffview.nvim",
+				"nvim-telescope/telescope.nvim", "ibhagwan/fzf-lua", "echasnovski/mini.pick",
 			},
+			cmd = { "Neogit" },
 			config = true
 		},
 		{
@@ -149,28 +169,18 @@ lazy.setup({
 			},
 			opts = {
 				formatters_by_ft = {
-					javascript = { "prettier" },
-					typescript = { "prettier" },
-					javascriptreact = { "prettier" },
-					typescriptreact = { "prettier" },
-					css = { "prettier" },
-					html = { "prettier" },
-					json = { "prettier" },
-					yaml = { "prettier" },
-					markdown = { "prettier" },
-					c = { "clang_format" },
-					cpp = { "clang_format" },
-					java = { "clang_format" },
-					cs = { "clang_format" },
-					scala = { "scalafmt" },
-					clojure = { "cljfmt" },
-					cuda = { "clang_format" },
-					lua = { "stylua" },
+					javascript = { "prettier" }, typescript = { "prettier" },
+					javascriptreact = { "prettier" }, typescriptreact = { "prettier" },
+					css = { "prettier" }, html = { "prettier" }, json = { "prettier" },
+					yaml = { "prettier" }, markdown = { "prettier" },
+					c = { "clang_format" }, cpp = { "clang_format" },
+					cuda = { "clang_format" }, java = { "clang_format" },
+					cs = { "clang_format" }, scala = { "scalafmt" },
+					clojure = { "cljfmt" }, lua = { "stylua" },
 					go = { "gofmt", "goimports" },
+					sh = { "shfmt" }, bash = { "shfmt" },
 				},
-				format_after_save = {
-					lsp_format = "fallback",
-				},
+				format_after_save = { lsp_format = "fallback" },
 			},
 		},
 
@@ -181,33 +191,25 @@ lazy.setup({
 			"neovim/nvim-lspconfig",
 			version = "*",
 			dependencies = {
-				"williamboman/mason.nvim",
-				"williamboman/mason-lspconfig.nvim",
-				"hrsh7th/cmp-nvim-lsp",
+				"williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim", "hrsh7th/cmp-nvim-lsp",
 			},
 			config = function()
 				require("mason").setup()
-			end
+			end,
 		},
 		{
 			'hrsh7th/nvim-cmp',
 			version = "*",
 			dependencies = {
-				'hrsh7th/cmp-nvim-lsp',
-				'hrsh7th/cmp-buffer',
-				'hrsh7th/cmp-path',
-				'L3MON4D3/LuaSnip',
-				'saadparwaiz1/cmp_luasnip',
+				'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path',
+				'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip',
 			},
 			config = function()
-				local cmp = require 'cmp'
-				local luasnip = require 'luasnip'
-
+				local cmp = require('cmp')
+				local luasnip = require('luasnip')
 				cmp.setup({
 					snippet = {
-						expand = function(args)
-							luasnip.lsp_expand(args.body)
-						end,
+						expand = function(args) luasnip.lsp_expand(args.body) end,
 					},
 					mapping = cmp.mapping.preset.insert({
 						['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -218,13 +220,10 @@ lazy.setup({
 						['<Tab>'] = cmp.mapping.select_next_item(),
 					}),
 					sources = cmp.config.sources({
-						{ name = 'nvim_lsp' },
-						{ name = 'luasnip' },
-					}, {
-						{ name = 'buffer' },
-					})
+						{ name = 'nvim_lsp' }, { name = 'luasnip' },
+					}, { { name = 'buffer' } }),
 				})
-			end
+			end,
 		},
 
 		-- ================================

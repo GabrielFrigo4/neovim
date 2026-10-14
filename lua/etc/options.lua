@@ -38,4 +38,6 @@ Nvim.option.tabstop = 4
 
 Nvim.option.smartcase = true
 Nvim.option.encoding = 'UTF-8'
-Nvim.option.termguicolors = true
+
+local is_raw_tty = vim.env.RAW_TTY == '1' or vim.env.TERM == 'linux' or vim.env.TERM == 'cons25'
+Nvim.option.termguicolors = not is_raw_tty

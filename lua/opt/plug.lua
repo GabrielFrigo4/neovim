@@ -2,5 +2,7 @@
 -- Module: NeoVim Vim-Plug Loader
 -- ----------------------------------------------------------------
 
-Nvim.plug.init()
-Nvim.plug.close()
+if vim.fn.exists('*plug#begin') == 1 then
+	Nvim.plug.init()
+	Nvim.plug.close()
+end

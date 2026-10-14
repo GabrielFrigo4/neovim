@@ -2,7 +2,12 @@
 -- Module: NeoVim Packages Loader
 -- ----------------------------------------------------------------
 
-local path = vim.fn.stdpath('config') .. '/lua/opt'
+local root = vim.g.config_root or vim.fn.stdpath('config')
+local path = root .. '/lua/opt'
+
+if not vim.uv.fs_stat(path) then
+	return
+end
 
 local files = {}
 for name, type in vim.fs.dir(path) do

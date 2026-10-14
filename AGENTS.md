@@ -22,7 +22,7 @@ O repositório `nvim` provê um ambiente de desenvolvimento modal moderno basead
 - **`lua/opt/`**: Módulos de plugins e gerenciadores:
     - `init.lua`: Carregador resiliente com `pcall`.
     - `lazy.lua`: Bootstrap e especificações declarativas do Lazy.nvim.
-    - `lsp.lua`: Configuração do Mason, handlers e servidores LSP.
+    - `mason.lua`: Configuração do Mason, handlers e servidores LSP.
     - `treesitter.lua`: Gramáticas e setup do Treesitter.
     - `plug.lua`: Compatibilidade com vim-plug legado.
 

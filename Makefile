@@ -7,7 +7,7 @@ MAKEFLAGS += --no-print-directory -s
 # Makefile: NeoVim Modal Editor
 # ----------------------------------------------------------------
 
-.PHONY: help hooks test headless format prettier ci
+.PHONY: help hooks test headless bench format prettier ci
 
 ### ================================
 ### HELP & DOCUMENTATION
@@ -23,6 +23,7 @@ help:
 	sec "Qualidade & Validação:"; \
 	cmd "test"           "Valida inicialização em modo headless"; \
 	cmd "headless"       "Executa boot limpo headless do Neovim"; \
+	cmd "bench"          "Mede tempo de inicialização headless (< 25ms)"; \
 	cmd "format"         "Formata documentações Markdown com Prettier"; \
 	cmd "prettier"       "Formata documentações Markdown com Prettier"; \
 	cmd "ci"             "Executa suíte de validação local do NeoVim"; \
@@ -49,6 +50,16 @@ headless:
 		nvim --headless -u init.lua -c "quit" > "/dev/null" 2>&1 && echo "  ✅ NeoVim: headless OK"; \
 	else \
 		echo "ℹ️  nvim não encontrado no PATH; ignorando teste headless."; \
+	fi
+
+bench:
+	echo "⏱️  Medindo tempo de inicialização do NeoVim..."
+	if command -v nvim > "/dev/null" 2>&1; then \
+		rm -f /tmp/nvim-bench.log; \
+		nvim --headless -u init.lua --startuptime /tmp/nvim-bench.log -c "quit" > "/dev/null" 2>&1; \
+		awk '/--- NVIM STARTED ---/ { printf "  ✅ NeoVim startup: %s ms\n", $$1 }' /tmp/nvim-bench.log | tail -n 1; \
+	else \
+		echo "ℹ️  nvim não encontrado no PATH; ignorando benchmark."; \
 	fi
 
 format: prettier
