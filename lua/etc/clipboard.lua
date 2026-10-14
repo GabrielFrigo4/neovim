@@ -66,7 +66,7 @@ if Nvim.isWsl then
 			cache_enabled = true,
 		}
 	else
-		error("don't find clipboard executable utils!")
+		Nvim.option.clipboard = "unnamedplus"
 	end
 elseif Nvim.isUnix then
 	if Nvim.func.executable("wl-copy") == 1 and Nvim.func.executable("wl-paste") == 1 then
