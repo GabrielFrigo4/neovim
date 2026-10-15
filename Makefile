@@ -66,7 +66,7 @@ format: prettier
 	echo "✅ Formatação concluída!"
 
 prettier:
-	if command -v prettier > "/dev/null" 2>&1; then prettier --write "**/*.md" 2> "/dev/null" || true; elif command -v npx > "/dev/null" 2>&1; then npx prettier --write "**/*.md" 2> "/dev/null" || true; fi
+	if command -v prettier > "/dev/null" 2>&1; then prettier --write "**/*.{md,json,jsonc,yml,yaml,html,css}" 2> "/dev/null" || true; elif command -v npx > "/dev/null" 2>&1; then npx --yes prettier --write "**/*.{md,json,jsonc,yml,yaml,html,css}" 2> "/dev/null" || true; fi
 
 ci: test
 	echo "🚀 NeoVim 100% pronto para produção!"
