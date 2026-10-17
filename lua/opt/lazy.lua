@@ -41,6 +41,8 @@ lazy.setup({
 						options = {
 							theme = is_tty and 'auto' or 'kanagawa',
 							icons_enabled = not is_tty,
+							section_separators = is_tty and { left = '', right = '' } or { left = '', right = '' },
+							component_separators = is_tty and { left = '|', right = '|' } or { left = '', right = '' },
 						},
 					})
 				end

@@ -46,5 +46,21 @@ Nvim.option.tabstop = 4
 Nvim.option.smartcase = true
 Nvim.option.encoding = 'UTF-8'
 
-local is_raw_tty = vim.env.RAW_TTY == '1' or vim.env.TERM == 'linux' or vim.env.TERM == 'cons25'
+local term = vim.env.TERM or ''
+local is_raw_tty = vim.env.RAW_TTY == '1'
+	or term == 'linux'
+	or term == 'cons25'
+	or term:match('^vt%d+') ~= nil
+	or (vim.env.DISPLAY == nil
+		and vim.env.WAYLAND_DISPLAY == nil
+		and vim.env.SSH_CONNECTION == nil
+		and vim.env.SSH_TTY == nil
+		and term ~= ''
+		and not term:match('xterm%-256color')
+		and not term:match('alacritty')
+		and not term:match('kitty')
+		and not term:match('foot')
+		and not term:match('wezterm')
+		and not term:match('ghostty'))
+
 Nvim.option.termguicolors = not is_raw_tty
