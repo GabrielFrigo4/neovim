@@ -91,6 +91,38 @@ Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 	command = 'set guicursor='
 })
 
+if vim.env.TERM == 'linux' then
+	local tty_cursor_grp = Nvim.api.nvim_create_augroup('LinuxTTYCursor', { clear = true })
+	Nvim.api.nvim_create_autocmd({ 'InsertEnter' }, {
+		group = tty_cursor_grp,
+		pattern = '*',
+		callback = function()
+			io.stdout:write('\27[?2c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = tty_cursor_grp,
+		pattern = '*:[rR]*',
+		callback = function()
+			io.stdout:write('\27[?2c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'InsertLeave' }, {
+		group = tty_cursor_grp,
+		pattern = '*',
+		callback = function()
+			io.stdout:write('\27[?6c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
+		group = tty_cursor_grp,
+		pattern = '*',
+		callback = function()
+			io.stdout:write('\27[?6c')
+		end,
+	})
+end
+
 local ft_vim_grp = Nvim.api.nvim_create_augroup('FileTypeVim', { clear = true })
 Nvim.api.nvim_create_autocmd('FileType', {
 	group = ft_vim_grp,
