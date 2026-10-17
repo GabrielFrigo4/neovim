@@ -93,23 +93,37 @@ Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 
 if vim.env.TERM == 'linux' then
 	local tty_cursor_grp = Nvim.api.nvim_create_augroup('LinuxTTYCursor', { clear = true })
-	Nvim.api.nvim_create_autocmd({ 'InsertEnter' }, {
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
-		pattern = '*',
+		pattern = '*:i*',
 		callback = function()
 			io.stdout:write('\27[?2c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
-		pattern = '*:[rR]*',
+		pattern = '*:c*',
 		callback = function()
-			io.stdout:write('\27[?2c')
+			io.stdout:write('\27[?3c')
 		end,
 	})
-	Nvim.api.nvim_create_autocmd({ 'InsertLeave' }, {
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
-		pattern = '*',
+		pattern = '*:[rR]*',
+		callback = function()
+			io.stdout:write('\27[?4c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = tty_cursor_grp,
+		pattern = '*:[vV\22sS\19]*',
+		callback = function()
+			io.stdout:write('\27[?5c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = tty_cursor_grp,
+		pattern = '*:n*',
 		callback = function()
 			io.stdout:write('\27[?6c')
 		end,
