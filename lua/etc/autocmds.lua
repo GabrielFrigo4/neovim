@@ -123,7 +123,7 @@ else
 		group = tty_cursor_grp,
 		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
 		callback = function()
-			set_cur('\27[?6c')
+			set_cur('\27[?5c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
