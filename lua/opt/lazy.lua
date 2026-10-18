@@ -20,6 +20,7 @@ lazy.setup({
 				if is_tty then
 					local ok = pcall(Nvim.cmd.colorscheme, "habamax")
 					if not ok then pcall(Nvim.cmd.colorscheme, "default") end
+					vim.cmd("silent! highlight Visual cterm=NONE ctermbg=238 ctermfg=15")
 				else
 					local ok = pcall(Nvim.cmd.colorscheme, "kanagawa-wave")
 					if not ok then
