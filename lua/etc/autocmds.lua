@@ -84,7 +84,7 @@ if vim.env.TERM ~= 'linux' then
 	Nvim.api.nvim_create_autocmd({ 'VimEnter', 'VimResume' }, {
 		group = cursor_group,
 		pattern = '*',
-		command = 'set guicursor=n-c:block,i-ci-ve:ver10,r-v:hor10,a:blinkwait500-blinkoff500-blinkon500-Cursor/lCursor',
+		command = 'set guicursor=n-v-sm:block,i-ci:ver25,c:hor20,r-cr:hor50,o:hor50,ve:ver35,a:blinkwait500-blinkoff500-blinkon500-Cursor/lCursor',
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 		group = cursor_group,
@@ -112,36 +112,46 @@ else
 			set_cur('\27[?2c')
 		end,
 	})
-	Nvim.api.nvim_create_autocmd({ 'ModeChanged', 'CmdlineEnter' }, {
-		group = tty_cursor_grp,
-		pattern = '*',
-		callback = function(ev)
-			if ev.event == 'CmdlineEnter' or (ev.match and ev.match:match('^.*:c.*$')) then
-				set_cur('\27[?3c')
-			end
-		end,
-	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
-		pattern = '*:[rR]*',
+		pattern = { '*:r*', '*:R*' },
 		callback = function()
 			set_cur('\27[?4c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
-		pattern = '*:[vV\22sS\19]*',
+		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
 		callback = function()
 			set_cur('\27[?5c')
 		end,
 	})
-	Nvim.api.nvim_create_autocmd({ 'ModeChanged', 'CmdlineLeave' }, {
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = tty_cursor_grp,
+		pattern = '*:o*',
+		callback = function()
+			set_cur('\27[?4c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = tty_cursor_grp,
+		pattern = '*:n*',
+		callback = function()
+			set_cur('\27[?6c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
-		callback = function(ev)
-			if ev.event == 'CmdlineLeave' or (ev.match and ev.match:match('^.*:n.*$')) then
-				set_cur('\27[?6c')
-			end
+		callback = function()
+			set_cur('\27[?3c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
+		group = tty_cursor_grp,
+		pattern = '*',
+		callback = function()
+			set_cur('\27[?6c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {

@@ -21,15 +21,15 @@ Este runbook orienta desenvolvedores e agentes de inteligência artificial na ma
 2. **Resiliência e Proteção com `pcall`:** Módulos de plugins em `lua/opt/init.lua` são carregados com tratamento defensivo de erro (`pcall`) para garantir inicialização sem falhas mesmo na ausência de pacotes externos.
 3. **Zero Symlinks Manuais:** O repositório opera como clone soberano em `${HOME}/.config/nvim` (Unix/MSYS2) ou `%LOCALAPPDATA%\nvim` (Windows nativo).
 4. **Ergonomia de Cursor Reativa (PTY vs Linux TTY):**
-    - **Em PTY Gráfico:** Configurado via `guicursor` nativo (`n-c:block,i-ci-ve:ver10,r-v:hor10`).
-    - **Em Linux Console TTY (`vim.env.TERM == 'linux'`):** Módulo reativo via `autocmd ModeChanged` injetando os 5 formatos de hardware do Linux VT:
-        - Inserção (`*:i*`): `\27[?2c` (Underline)
-        - Comando (`*:c*`, `CmdlineEnter`): `\27[?3c` (Lower Third)
-        - Substituição (`*:[rR]*`): `\27[?4c` (Lower Half)
-        - Visual (`*:[vV\22sS\19]*`): `\27[?5c` (Two Thirds)
-        - Normal (`*:n*`, `CmdlineLeave`): `\27[?6c` (Full Block)
+    - **Em PTY Gráfico:** Configurado via `guicursor` nativo com geometria semântica rica (`n-v-sm:block,i-ci:ver25,c:hor20,r-cr:hor50,o:hor50,ve:ver35`).
+    - **Em Linux Console TTY (`vim.env.TERM == 'linux'`):** Módulo reativo via `autocmd` injetando os 5 formatos de hardware do Linux VT:
+        - Inserção (`*:i*`): `\x1b[?2c` (Underline na base)
+        - Comando (`*:c*`, `CmdlineEnter`): `\x1b[?3c` (Lower Third - 1/3 inferior)
+        - Substituição e Operator-Pending (`*:r*`, `*:R*`, `*:o*`): `\x1b[?4c` (Lower Half - metade inferior)
+        - Visual e Select (`*:v*`, `*:V*`, `*:\x16*`, `*:s*`, `*:S*`, `*:\x13*`): `\x1b[?5c` (Two Thirds - 2/3 inferiores)
+        - Normal (`*:n*`, `CmdlineLeave`): `\x1b[?6c` (Full Block)
         - **Desativação de `guicursor` em TTY:** Força `vim.opt.guicursor = ''` para impedir que o tradutor embutido de `linuxvt` do NeoVim (`src/nvim/tui/tui.c`) colida com as sequências emitidas e resete o comando para bloco sólido em redraws de tela.
-        - Encerramento / Suspensão (`VimLeave, VimSuspend`): Restaura `\27%G\27[?16;238;0c` para auto-cura imediata do console.
+        - Encerramento / Suspensão (`VimLeave, VimSuspend`): Restaura `\x1b%G\x1b[?16;238;0c` para auto-cura imediata do console.
 
 ---
 
