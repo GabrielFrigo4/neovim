@@ -84,7 +84,7 @@ if vim.env.TERM ~= 'linux' then
 	Nvim.api.nvim_create_autocmd({ 'VimEnter', 'VimResume' }, {
 		group = cursor_group,
 		pattern = '*',
-		command = 'set guicursor=n-v-sm:block,i-ci:ver25,c:hor20,r-cr:hor50,o:hor50,ve:ver35,a:blinkwait500-blinkoff500-blinkon500-Cursor/lCursor',
+		command = 'set guicursor=n-v-sm:block,i-ci:ver25,c:ver25,r-cr:hor50,o:hor50,ve:ver35,a:blinkwait500-blinkoff500-blinkon500-Cursor/lCursor',
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 		group = cursor_group,

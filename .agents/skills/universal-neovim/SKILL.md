@@ -21,7 +21,7 @@ Este runbook orienta desenvolvedores e agentes de inteligência artificial na ma
 2. **Resiliência e Proteção com `pcall`:** Módulos de plugins em `lua/opt/init.lua` são carregados com tratamento defensivo de erro (`pcall`) para garantir inicialização sem falhas mesmo na ausência de pacotes externos.
 3. **Zero Symlinks Manuais:** O repositório opera como clone soberano em `${HOME}/.config/nvim` (Unix/MSYS2) ou `%LOCALAPPDATA%\nvim` (Windows nativo).
 4. **Ergonomia de Cursor Reativa (PTY vs Linux TTY):**
-    - **Em PTY Gráfico:** Configurado via `guicursor` nativo com geometria semântica rica (`n-v-sm:block,i-ci:ver25,c:hor20,r-cr:hor50,o:hor50,ve:ver35`).
+    - **Em PTY Gráfico:** Configurado via `guicursor` nativo com geometria semântica rica (`n-v-sm:block,i-ci:ver25,c:ver25,r-cr:hor50,o:hor50,ve:ver35`, minibuffer com barra vertical alinhado ao Helix).
     - **Em Linux Console TTY (`vim.env.TERM == 'linux'`):** Módulo reativo via `autocmd` injetando os 5 formatos de hardware do Linux VT:
         - Inserção (`*:i*`): `\x1b[?2c` (Underline na base)
         - Comando (`*:c*`, `CmdlineEnter`): `\x1b[?3c` (Lower Third - 1/3 inferior)
