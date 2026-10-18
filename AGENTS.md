@@ -39,6 +39,7 @@ O repositório `nvim` provê um ambiente de desenvolvimento modal moderno basead
 7. **Invariante de Clonagem "Out-of-the-Box" (Zero-Tweaks Git Invariant):** O NeoVim deve funcionar imediatamente após `git clone`. Modos octais no Git Index DEVEM ser rigorosamente `0755` para `neovim.sh` e hooks, e `0644` para arquivos `.lua` e documentação.
 8. **Governança de Roadmap (Opção C):** O repositório mantém seu [TODO.md](TODO.md) atualizado com a Matriz de Status e Backlog de Evolução, sincronizado com o badge no `README.md`.
 9. **Refatoração Sem Legado / Soberania Monousuário (Clean-Break / Zero-Cruft Invariant):** O ecossistema é estritamente pessoal, governado e operado por um único desenvolvedor soberano (Gabriel Frigo). Evite manter resíduos de retrocompatibilidade, shims temporários, wrappers obsoletos, seções de compatibilidade legada ou aliases de transição ao renomear variáveis, comandos, funções, diretórios ou arquivos, salvo se expressamente ordenado pelo usuário. Toda refatoração deve ser atômica, direta, definitiva e limpa (_clean break_), expurgando o identificador antigo integralmente da base de código.
+10. **Ergonomia de Cursor (PTY vs Linux TTY):** O NeoVim gerencia o cursor via `guicursor` em PTYs e via autocmd reativo `ModeChanged` nos 5 modos de hardware do Linux VT (`\27[?2c` a `\27[?6c`), restaurando `\27%G\27[?16;238;0c` no `VimLeave`/`VimSuspend`.
 
 ---
 

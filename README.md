@@ -19,6 +19,7 @@ Este repositório contém a configuração oficial do **NeoVim** de Gabriel Frig
 - **Ecossistema Lazy.nvim:** Instalação e gestão declarativa e assíncrona de plugins.
 - **Mason LSP:** Gestão e autoconfiguração de Language Servers com fallback de capabilities.
 - **Tema Kanagawa:** Visual relaxante e tema com fallback silencioso para `habamax` / `default`.
+- **Ergonomia de Cursor Multi-Modo:** Suporte a `guicursor` em PTYs gráficos e módulo reativo (`ModeChanged`) nos 5 modos de hardware em consoles Linux TTY (`\27[?2c` a `\27[?6c`) com auto-cura estática no encerramento (`\27%G\27[?16;238;0c`).
 
 ---
 

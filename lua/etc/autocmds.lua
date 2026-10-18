@@ -132,7 +132,7 @@ if vim.env.TERM == 'linux' then
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
-			io.stdout:write('\27[?6c')
+			io.stdout:write('\27%G\27[?16;238;0c')
 		end,
 	})
 end
