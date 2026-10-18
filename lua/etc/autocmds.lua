@@ -123,7 +123,7 @@ else
 		group = tty_cursor_grp,
 		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
 		callback = function()
-			set_cur('\27[?5c')
+			set_cur('\27[?6c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
@@ -140,7 +140,20 @@ else
 			set_cur('\27[?6c')
 		end,
 	})
+	local function set_cmdline_cur()
+		set_cur('\27[?3c')
+		vim.defer_fn(function()
+			if vim.fn.getcmdtype() ~= '' then
+				set_cur('\27[?3c')
+			end
+		end, 15)
+	end
 	Nvim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
+		group = tty_cursor_grp,
+		pattern = '*',
+		callback = set_cmdline_cur,
+	})
+	Nvim.api.nvim_create_autocmd({ 'CmdlineChanged' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
@@ -161,6 +174,16 @@ else
 			set_cur('\27%G\27[?16;238;0c')
 		end,
 	})
+	local waiting_replace = false
+	vim.on_key(function(key, typed)
+		if waiting_replace then
+			waiting_replace = false
+			set_cur('\27[?6c')
+		elseif vim.fn.mode() == 'n' and typed == 'r' then
+			waiting_replace = true
+			set_cur('\27[?4c')
+		end
+	end)
 end
 
 local ft_vim_grp = Nvim.api.nvim_create_augroup('FileTypeVim', { clear = true })
