@@ -24,10 +24,11 @@ Este runbook orienta desenvolvedores e agentes de inteligência artificial na ma
     - **Em PTY Gráfico:** Configurado via `guicursor` nativo (`n-c:block,i-ci-ve:ver10,r-v:hor10`).
     - **Em Linux Console TTY (`vim.env.TERM == 'linux'`):** Módulo reativo via `autocmd ModeChanged` injetando os 5 formatos de hardware do Linux VT:
         - Inserção (`*:i*`): `\27[?2c` (Underline)
-        - Comando (`*:c*`): `\27[?3c` (Lower Third)
+        - Comando (`*:c*`, `CmdlineEnter`): `\27[?3c` (Lower Third)
         - Substituição (`*:[rR]*`): `\27[?4c` (Lower Half)
         - Visual (`*:[vV\22sS\19]*`): `\27[?5c` (Two Thirds)
-        - Normal (`*:n*`): `\27[?6c` (Full Block)
+        - Normal (`*:n*`, `CmdlineLeave`): `\27[?6c` (Full Block)
+        - **Desativação de `guicursor` em TTY:** Força `vim.opt.guicursor = ''` para impedir que o tradutor embutido de `linuxvt` do NeoVim (`src/nvim/tui/tui.c`) colida com as sequências emitidas e resete o comando para bloco sólido em redraws de tela.
         - Encerramento / Suspensão (`VimLeave, VimSuspend`): Restaura `\27%G\27[?16;238;0c` para auto-cura imediata do console.
 
 ---
