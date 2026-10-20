@@ -89,7 +89,7 @@ if vim.env.TERM ~= 'linux' and not vim.g.is_raw_tty then
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 		group = cursor_group,
 		pattern = '*',
-		command = 'set guicursor= | call chansend(v:stderr, "\\<Esc>[2 q")',
+		command = 'set guicursor= | call chansend(v:stderr, "\\<Esc>[1 q")',
 	})
 elseif vim.env.TERM ~= 'linux' then
 	vim.opt.guicursor = ''
