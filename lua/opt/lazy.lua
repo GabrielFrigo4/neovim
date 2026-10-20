@@ -283,8 +283,8 @@ lazy.setup({
 	-- ================================
 	-- CONFIGURACAO GERAL
 	-- ================================
-	install = { colorscheme = { "kanagawa-wave" } },
-	checker = { enabled = true, notify = false },
+	install = { colorscheme = { vim.g.is_raw_tty and "habamax" or "kanagawa-wave" } },
+	checker = { enabled = false, notify = false },
 	change_detection = { notify = false },
 	rocks = { enabled = false },
 	performance = {

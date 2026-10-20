@@ -79,18 +79,20 @@ setExtCmd(tabs, 'set noet ci pi sts=4 sw=4 ts=4')
 -- ================================
 -- UI & FOLDING
 -- ================================
-if vim.env.TERM ~= 'linux' then
+if vim.env.TERM ~= 'linux' and not vim.g.is_raw_tty then
 	local cursor_group = Nvim.api.nvim_create_augroup('ConfigCursor', { clear = true })
 	Nvim.api.nvim_create_autocmd({ 'VimEnter', 'VimResume' }, {
 		group = cursor_group,
 		pattern = '*',
-		command = 'set guicursor=n-v-sm:block,i-ci:ver25,c:ver25,r-cr:hor50,o:hor50,ve:ver35,a:blinkwait500-blinkoff500-blinkon500-Cursor/lCursor',
+		command = 'set guicursor=n-v-sm:block,i-ci:ver25,c:ver25,r-cr:hor50,o:hor50,ve:ver35,a:blinkon0-Cursor/lCursor',
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 		group = cursor_group,
 		pattern = '*',
-		command = 'set guicursor=',
+		command = 'set guicursor= | call chansend(v:stderr, "\\<Esc>[2 q")',
 	})
+elseif vim.env.TERM ~= 'linux' then
+	vim.opt.guicursor = ''
 else
 	vim.opt.guicursor = ''
 	local tty_cursor_grp = Nvim.api.nvim_create_augroup('LinuxTTYCursor', { clear = true })

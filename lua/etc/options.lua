@@ -11,10 +11,11 @@ if vim.env.TERM == 'linux' then
 	Nvim.cmd('let &t_SR = "\\<Esc>[?4c"')
 	Nvim.cmd('let &t_EI = "\\<Esc>[?6c"')
 	Nvim.cmd('let &t_te = "\\<Esc>[?6c"')
-else
-	Nvim.cmd('let &t_SI = "\\<Esc>[5 q"')
-	Nvim.cmd('let &t_SR = "\\<Esc>[3 q"')
-	Nvim.cmd('let &t_EI = "\\<Esc>[1 q"')
+elseif not vim.g.is_raw_tty then
+	Nvim.cmd('let &t_SI = "\\<Esc>[6 q"')
+	Nvim.cmd('let &t_SR = "\\<Esc>[4 q"')
+	Nvim.cmd('let &t_EI = "\\<Esc>[2 q"')
+	Nvim.cmd('let &t_te = "\\<Esc>[2 q"')
 end
 
 Nvim.global.polyglot_disabled = { 'ftdetect', 'ada' }
@@ -43,23 +44,11 @@ Nvim.option.tabstop = 4
 Nvim.option.smartcase = true
 Nvim.option.encoding = 'UTF-8'
 
-local term = vim.env.TERM or ''
-local is_raw_tty = vim.env.RAW_TTY == '1'
-	or term == 'linux'
-	or term == 'cons25'
-	or term:match('^vt%d+') ~= nil
-	or (vim.env.DISPLAY == nil
-		and vim.env.WAYLAND_DISPLAY == nil
-		and vim.env.SSH_CONNECTION == nil
-		and vim.env.SSH_TTY == nil
-		and term ~= ''
-		and not term:match('xterm%-256color')
-		and not term:match('alacritty')
-		and not term:match('kitty')
-		and not term:match('foot')
-		and not term:match('wezterm')
-		and not term:match('ghostty'))
+local is_raw_tty = vim.g.is_raw_tty == true
 
+if is_raw_tty then
+	vim.o.ttyfast = false
+end
 Nvim.option.cursorcolumn = not is_raw_tty
 Nvim.option.cursorline = true
 Nvim.option.termguicolors = not is_raw_tty

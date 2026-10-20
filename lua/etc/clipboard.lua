@@ -68,8 +68,8 @@ if Nvim.isWsl then
 	else
 		Nvim.option.clipboard = "unnamedplus"
 	end
-elseif Nvim.isUnix then
-	if Nvim.func.executable("wl-copy") == 1 and Nvim.func.executable("wl-paste") == 1 then
+elseif Nvim.isUnix and (vim.env.DISPLAY ~= nil or vim.env.WAYLAND_DISPLAY ~= nil) then
+	if vim.env.WAYLAND_DISPLAY ~= nil and Nvim.func.executable("wl-copy") == 1 and Nvim.func.executable("wl-paste") == 1 then
 		Nvim.global.clipboard = {
 			name = "wl-clipboard",
 			copy = {
@@ -86,7 +86,7 @@ elseif Nvim.isUnix then
 			},
 			cache_enabled = true
 		}
-	elseif Nvim.func.executable("xclip") == 1 then
+	elseif vim.env.DISPLAY ~= nil and Nvim.func.executable("xclip") == 1 then
 		Nvim.global.clipboard = {
 			name = "xclip",
 			copy = {
@@ -103,7 +103,7 @@ elseif Nvim.isUnix then
 			},
 			cache_enabled = true
 		}
-	elseif Nvim.func.executable("xsel") == 1 then
+	elseif vim.env.DISPLAY ~= nil and Nvim.func.executable("xsel") == 1 then
 		Nvim.global.clipboard = {
 			name = "xsel",
 			copy = {
