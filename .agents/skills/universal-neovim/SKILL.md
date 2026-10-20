@@ -26,9 +26,9 @@ Este runbook orienta desenvolvedores e agentes de inteligência artificial na ma
         - Inserção (`*:i*`): `\x1b[?2c` (Underline na base)
         - Comando (`*:c*`, `CmdlineEnter`): `\x1b[?3c` (Lower Third - 1/3 inferior)
         - Substituição e Operator-Pending (`*:r*`, `*:R*`, `*:o*`): `\x1b[?4c` (Lower Half - metade inferior)
-        - Visual e Select (`*:v*`, `*:V*`, `*:\x16*`, `*:s*`, `*:S*`, `*:\x13*`): `\x1b[?5c` (Two Thirds - 2/3 inferiores, com `highlight Visual cterm=NONE ctermbg=238 ctermfg=15` para manter seleção branca limpa e imune a distorção ciano/inversão)
+        - Visual e Select (`*:v*`, `*:V*`, `*:\x16*`, `*:s*`, `*:S*`, `*:\x13*`): `\x1b[?5c` (Two Thirds - 2/3 inferiores, com `highlight Visual cterm=NONE ctermfg=15 ctermbg=4` e tabela completa de 16 cores ANSI sem índices de 256 cores)
         - Normal (`*:n*`, `CmdlineLeave`): `\x1b[?6c` (Full Block)
-        - **Desativação de `guicursor` em TTY:** Força `vim.opt.guicursor = ''` para impedir que o tradutor embutido de `linuxvt` do NeoVim (`src/nvim/tui/tui.c`) colida com as sequências emitidas e resete o comando para bloco sólido em redraws de tela.
+        - **Desativação de `guicursor` e `cursorcolumn` em TTY:** Força `vim.opt.guicursor = ''` e `cursorcolumn = not is_raw_tty` em consoles puros, aplicando highlights de 16 cores de alto contraste sobre `habamax` (em `lua/opt/lazy.lua`).
         - Encerramento / Suspensão (`VimLeave, VimSuspend`): Restaura `\x1b%G\x1b[?16;238;0c` para auto-cura imediata do console.
 
 ---

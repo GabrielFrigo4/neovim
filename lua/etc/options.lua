@@ -11,7 +11,6 @@ if vim.env.TERM == 'linux' then
 	Nvim.cmd('let &t_SR = "\\<Esc>[?4c"')
 	Nvim.cmd('let &t_EI = "\\<Esc>[?6c"')
 	Nvim.cmd('let &t_te = "\\<Esc>[?6c"')
-	Nvim.cmd('silent! highlight Visual cterm=NONE ctermbg=238 ctermfg=15')
 else
 	Nvim.cmd('let &t_SI = "\\<Esc>[5 q"')
 	Nvim.cmd('let &t_SR = "\\<Esc>[3 q"')
@@ -28,9 +27,6 @@ Nvim.option.mousemodel = 'popup'
 
 Nvim.guioption = 'adegmrLT'
 Nvim.option.clipboard:append('unnamed', 'unnamedplus')
-
-Nvim.option.cursorcolumn = true
-Nvim.option.cursorline = true
 
 Nvim.option.relativenumber = true
 Nvim.option.inccommand = 'split'
@@ -64,4 +60,6 @@ local is_raw_tty = vim.env.RAW_TTY == '1'
 		and not term:match('wezterm')
 		and not term:match('ghostty'))
 
+Nvim.option.cursorcolumn = not is_raw_tty
+Nvim.option.cursorline = true
 Nvim.option.termguicolors = not is_raw_tty
