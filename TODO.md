@@ -22,4 +22,7 @@
 ## 🛡️ Atributos Entregues
 
 - **Zero Pendências:** Editor modal moderno em Lua com inicialização instantânea e dependências resolvidas.
+- **Mouse SGR & Fallback TTY:** Emissão forçada de sequências SGR 1006 no console FreeBSD e Linux raw TTY via autocmds `VimEnter`/`VimLeave`.
+- **Cursor em Bloco Colorido por Modo no TTY:** Transições automáticas de cor de cursor no FreeBSD TTY via OSC 12 no evento `ModeChanged`.
+- **Terminal Embutido & Paleta ANSI 16 Cores:** Configuração das variáveis `terminal_color_*` espelhando a paleta canônica e mapeamentos ergonômicos no modo terminal.
 - **Sincronização:** Total aderência aos 22 Princípios de Engenharia UNIX do Universal Environment.
