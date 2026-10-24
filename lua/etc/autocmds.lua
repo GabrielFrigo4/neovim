@@ -93,6 +93,76 @@ if vim.env.TERM ~= 'linux' and not vim.g.is_raw_tty then
 	})
 elseif vim.env.TERM ~= 'linux' then
 	vim.opt.guicursor = ''
+	local bsd_cursor_grp = Nvim.api.nvim_create_augroup('FreeBSDTTYCursor', { clear = true })
+	local function set_cur_color(osc, fg, bg)
+		io.stdout:write(osc)
+		io.stdout:flush()
+		pcall(vim.api.nvim_set_hl, 0, 'Cursor', { fg = fg, bg = bg })
+	end
+	Nvim.api.nvim_create_autocmd({ 'VimEnter' }, {
+		group = bsd_cursor_grp,
+		pattern = '*',
+		callback = function()
+			set_cur_color('\27]12;#2472c8\7', '#ffffff', '#2472c8')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = bsd_cursor_grp,
+		pattern = '*:i*',
+		callback = function()
+			set_cur_color('\27]12;#0dbc79\7', '#000000', '#0dbc79')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = bsd_cursor_grp,
+		pattern = { '*:r*', '*:R*' },
+		callback = function()
+			set_cur_color('\27]12;#cd3131\7', '#ffffff', '#cd3131')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = bsd_cursor_grp,
+		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
+		callback = function()
+			set_cur_color('\27]12;#e5e510\7', '#000000', '#e5e510')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = bsd_cursor_grp,
+		pattern = '*:o*',
+		callback = function()
+			set_cur_color('\27]12;#cd3131\7', '#ffffff', '#cd3131')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = bsd_cursor_grp,
+		pattern = '*:n*',
+		callback = function()
+			set_cur_color('\27]12;#2472c8\7', '#ffffff', '#2472c8')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
+		group = bsd_cursor_grp,
+		pattern = '*',
+		callback = function()
+			set_cur_color('\27]12;#e5e510\7', '#000000', '#e5e510')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
+		group = bsd_cursor_grp,
+		pattern = '*',
+		callback = function()
+			set_cur_color('\27]12;#2472c8\7', '#ffffff', '#2472c8')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
+		group = bsd_cursor_grp,
+		pattern = '*',
+		callback = function()
+			io.stdout:write('\27]112\7')
+			io.stdout:flush()
+		end,
+	})
 else
 	vim.opt.guicursor = ''
 	local tty_cursor_grp = Nvim.api.nvim_create_augroup('LinuxTTYCursor', { clear = true })
@@ -195,4 +265,36 @@ Nvim.api.nvim_create_autocmd('FileType', {
 	callback = function()
 		Nvim.opt_local.foldmethod = 'marker'
 	end
+})
+
+if vim.g.is_raw_tty then
+	local tty_mouse_grp = Nvim.api.nvim_create_augroup('RawTTYMouse', { clear = true })
+	Nvim.api.nvim_create_autocmd({ 'VimEnter', 'VimResume' }, {
+		group = tty_mouse_grp,
+		pattern = '*',
+		callback = function()
+			io.stdout:write('\27[?1000h\27[?1002h\27[?1006h')
+			io.stdout:flush()
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
+		group = tty_mouse_grp,
+		pattern = '*',
+		callback = function()
+			io.stdout:write('\27[?1006l\27[?1002l\27[?1000l')
+			io.stdout:flush()
+		end,
+	})
+end
+
+local term_grp = Nvim.api.nvim_create_augroup('ConfigTerminal', { clear = true })
+Nvim.api.nvim_create_autocmd('TermOpen', {
+	group = term_grp,
+	pattern = '*',
+	callback = function()
+		vim.opt_local.number = false
+		vim.opt_local.relativenumber = false
+		vim.opt_local.signcolumn = 'no'
+		vim.cmd('startinsert')
+	end,
 })

@@ -53,3 +53,6 @@ nrmap('<leader>p', '"+p', 'Paste from system clipboard')
 nrmap('<leader>P', '"+P', 'Paste before from system clipboard')
 Nvim.keymap.set('v', '<leader>y', '"+y', { desc = 'Yank selection to system clipboard', noremap = true, silent = true })
 Nvim.keymap.set('v', '<leader>p', '"+p', { desc = 'Paste over selection from system clipboard', noremap = true, silent = true })
+
+Nvim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Exit terminal mode', noremap = true })
+Nvim.keymap.set('t', [[<C-\><C-n>]], [[<C-\><C-n>]], { desc = 'Exit terminal mode', noremap = true })
