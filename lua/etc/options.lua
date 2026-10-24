@@ -6,18 +6,6 @@ Nvim.option.compatible = false
 Nvim.cmd('filetype plugin indent on')
 Nvim.cmd('syntax on')
 
-if vim.env.TERM == 'linux' then
-	Nvim.cmd('let &t_SI = "\\<Esc>[?2c"')
-	Nvim.cmd('let &t_SR = "\\<Esc>[?4c"')
-	Nvim.cmd('let &t_EI = "\\<Esc>[?6c"')
-	Nvim.cmd('let &t_te = "\\<Esc>[?6c"')
-elseif not vim.g.is_raw_tty then
-	Nvim.cmd('let &t_SI = "\\<Esc>[5 q"')
-	Nvim.cmd('let &t_SR = "\\<Esc>[3 q"')
-	Nvim.cmd('let &t_EI = "\\<Esc>[1 q"')
-	Nvim.cmd('let &t_te = "\\<Esc>[1 q"')
-end
-
 Nvim.global.polyglot_disabled = { 'ftdetect', 'ada' }
 
 Nvim.option.backspace:append('indent', 'eol', 'start')
