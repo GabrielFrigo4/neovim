@@ -79,6 +79,10 @@ setExtCmd(tabs, 'set noet ci pi sts=4 sw=4 ts=4')
 -- ================================
 -- UI & FOLDING
 -- ================================
+local set_cur_tone
+local set_cur
+local tty_out = io.open('/dev/tty', 'w')
+
 if vim.env.TERM ~= 'linux' then
 	local cursor_group = Nvim.api.nvim_create_augroup('ConfigCursor', { clear = true })
 	if not vim.g.is_raw_tty then
@@ -91,14 +95,33 @@ if vim.env.TERM ~= 'linux' then
 		vim.opt.guicursor = ''
 	end
 
-	local function scale_tone(alpha)
-		local hl = vim.api.nvim_get_hl(0, { name = 'Cursor' })
-		local col = hl.bg or hl.fg
-		local norm = vim.api.nvim_get_hl(0, { name = 'Normal' })
-		if not col then
-			col = norm.fg or (vim.o.background == 'light' and 0x000000 or 0xffffff)
+	local base_cursor_color = nil
+	local base_cursor_bg = nil
+
+	local function resolve_base_colors()
+		if base_cursor_color and base_cursor_bg then
+			return base_cursor_color, base_cursor_bg
 		end
+		local hl = vim.api.nvim_get_hl(0, { name = 'Cursor' })
+		local norm = vim.api.nvim_get_hl(0, { name = 'Normal' })
+		local col = hl.bg or hl.fg or norm.fg or (vim.o.background == 'light' and 0x000000 or 0xffffff)
 		local bg = norm.bg or (vim.o.background == 'light' and 0xffffff or 0x000000)
+		base_cursor_color = col
+		base_cursor_bg = bg
+		return base_cursor_color, base_cursor_bg
+	end
+
+	Nvim.api.nvim_create_autocmd({ 'ColorScheme' }, {
+		group = cursor_group,
+		pattern = '*',
+		callback = function()
+			base_cursor_color = nil
+			base_cursor_bg = nil
+		end,
+	})
+
+	local function scale_tone(alpha)
+		local col, bg = resolve_base_colors()
 		local cr = bit.band(bit.rshift(col, 16), 0xff)
 		local cg = bit.band(bit.rshift(col, 8), 0xff)
 		local cb = bit.band(col, 0xff)
@@ -110,15 +133,29 @@ if vim.env.TERM ~= 'linux' then
 		local nb = math.min(255, math.max(0, math.floor(cb * alpha + bb * (1.0 - alpha) + 0.5)))
 		return string.format('#%02x%02x%02x', nr, ng, nb)
 	end
-	local function set_cur_tone(factor)
+
+	set_cur_tone = function(factor)
 		local hex = scale_tone(factor)
+		local _, bg = resolve_base_colors()
+		pcall(vim.api.nvim_set_hl, 0, 'Cursor', { fg = bg, bg = hex })
 		local osc = string.format('\27]12;%s\7', hex)
-		pcall(vim.api.nvim_chan_send, vim.v.stderr, osc)
+		if tty_out then
+			pcall(function()
+				tty_out:write(osc)
+				tty_out:flush()
+			end)
+		end
+		pcall(function()
+			io.stdout:write(osc)
+			io.stdout:flush()
+		end)
 		pcall(function()
 			io.stderr:write(osc)
 			io.stderr:flush()
 		end)
+		pcall(vim.api.nvim_chan_send, vim.v.stderr, osc)
 	end
+
 	Nvim.api.nvim_create_autocmd({ 'VimEnter' }, {
 		group = cursor_group,
 		pattern = '*',
@@ -175,18 +212,30 @@ if vim.env.TERM ~= 'linux' then
 			if not vim.g.is_raw_tty then
 				pcall(vim.api.nvim_chan_send, vim.v.stderr, '\27[1 q')
 			end
-			pcall(vim.api.nvim_chan_send, vim.v.stderr, '\27]112\7')
+			local reset_osc = '\27]112\7'
+			if tty_out then
+				pcall(function()
+					tty_out:write(reset_osc)
+					tty_out:flush()
+					tty_out:close()
+				end)
+			end
 			pcall(function()
-				io.stderr:write('\27]112\7')
+				io.stdout:write(reset_osc)
+				io.stdout:flush()
+			end)
+			pcall(function()
+				io.stderr:write(reset_osc)
 				io.stderr:flush()
 			end)
+			pcall(vim.api.nvim_chan_send, vim.v.stderr, reset_osc)
 		end,
 	})
 else
 	vim.opt.guicursor = ''
 	local tty_cursor_grp = Nvim.api.nvim_create_augroup('LinuxTTYCursor', { clear = true })
 	local tty_fd = io.open('/dev/tty', 'w')
-	local function set_cur(code)
+	set_cur = function(code)
 		local function emit()
 			if tty_fd then
 				pcall(function()
@@ -299,18 +348,63 @@ else
 			end
 		end,
 	})
-	local waiting_replace = false
-	vim.on_key(function(key, typed)
-		local m = vim.fn.mode()
-		if waiting_replace then
-			waiting_replace = false
-			set_cur(m == 'i' and '\27[?2c' or '\27[?6c')
-		elseif (m == 'n' or m == 'niI') and typed == 'r' then
-			waiting_replace = true
-			set_cur('\27[?4c')
-		end
-	end)
 end
+
+local waiting_replace = false
+vim.on_key(function(key, typed)
+	local m = vim.fn.mode()
+	if waiting_replace then
+		waiting_replace = false
+		if vim.env.TERM == 'linux' then
+			if set_cur then
+				set_cur(m == 'i' and '\27[?2c' or '\27[?6c')
+			end
+		else
+			if set_cur_tone then
+				set_cur_tone(m == 'i' and 0.92 or 1.0)
+			end
+			if not vim.g.is_raw_tty then
+				local shape = (m == 'i') and '\27[5 q' or '\27[1 q'
+				if tty_out then
+					pcall(function()
+						tty_out:write(shape)
+						tty_out:flush()
+					end)
+				end
+				pcall(function()
+					io.stdout:write(shape)
+					io.stdout:flush()
+				end)
+				pcall(vim.api.nvim_chan_send, vim.v.stderr, shape)
+			end
+		end
+	elseif (m == 'n' or m == 'niI') and typed == 'r' then
+		waiting_replace = true
+		if vim.env.TERM == 'linux' then
+			if set_cur then
+				set_cur('\27[?4c')
+			end
+		else
+			if set_cur_tone then
+				set_cur_tone(0.76)
+			end
+			if not vim.g.is_raw_tty then
+				local shape = '\27[3 q'
+				if tty_out then
+					pcall(function()
+						tty_out:write(shape)
+						tty_out:flush()
+					end)
+				end
+				pcall(function()
+					io.stdout:write(shape)
+					io.stdout:flush()
+				end)
+				pcall(vim.api.nvim_chan_send, vim.v.stderr, shape)
+			end
+		end
+	end
+end)
 
 local ft_vim_grp = Nvim.api.nvim_create_augroup('FileTypeVim', { clear = true })
 Nvim.api.nvim_create_autocmd('FileType', {
