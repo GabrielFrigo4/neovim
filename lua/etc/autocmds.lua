@@ -79,21 +79,18 @@ setExtCmd(tabs, 'set noet ci pi sts=4 sw=4 ts=4')
 -- ================================
 -- UI & FOLDING
 -- ================================
-if vim.env.TERM ~= 'linux' and not vim.g.is_raw_tty then
+if vim.env.TERM ~= 'linux' then
 	local cursor_group = Nvim.api.nvim_create_augroup('ConfigCursor', { clear = true })
-	Nvim.api.nvim_create_autocmd({ 'VimEnter', 'VimResume' }, {
-		group = cursor_group,
-		pattern = '*',
-		command = 'set guicursor=n-v-sm:block,i-ci:ver25,c:ver25,r-cr:hor50,o:hor50,ve:ver35,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor',
-	})
-	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
-		group = cursor_group,
-		pattern = '*',
-		command = 'set guicursor= | call chansend(v:stderr, "\\<Esc>[1 q")',
-	})
-elseif vim.env.TERM ~= 'linux' then
-	vim.opt.guicursor = ''
-	local bsd_cursor_grp = Nvim.api.nvim_create_augroup('FreeBSDTTYCursor', { clear = true })
+	if not vim.g.is_raw_tty then
+		Nvim.api.nvim_create_autocmd({ 'VimEnter', 'VimResume' }, {
+			group = cursor_group,
+			pattern = '*',
+			command = 'set guicursor=n-v-sm:block,i-ci:ver25,c:ver25,r-cr:hor50,o:hor50,ve:ver35,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor',
+		})
+	else
+		vim.opt.guicursor = ''
+	end
+
 	local function scale_tone(alpha)
 		local hl = vim.api.nvim_get_hl(0, { name = 'Cursor' })
 		local col = hl.bg or hl.fg
@@ -123,65 +120,61 @@ elseif vim.env.TERM ~= 'linux' then
 		end)
 	end
 	Nvim.api.nvim_create_autocmd({ 'VimEnter' }, {
-		group = bsd_cursor_grp,
+		group = cursor_group,
 		pattern = '*',
 		callback = function()
 			set_cur_tone(1.0)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
-		group = bsd_cursor_grp,
+		group = cursor_group,
 		pattern = '*:i*',
+		callback = function()
+			set_cur_tone(0.95)
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
+		group = cursor_group,
+		pattern = { '*:r*', '*:R*', '*:o*' },
 		callback = function()
 			set_cur_tone(0.85)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
-		group = bsd_cursor_grp,
-		pattern = { '*:r*', '*:R*' },
-		callback = function()
-			set_cur_tone(0.70)
-		end,
-	})
-	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
-		group = bsd_cursor_grp,
+		group = cursor_group,
 		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
 		callback = function()
-			set_cur_tone(0.55)
+			set_cur_tone(0.80)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
-		group = bsd_cursor_grp,
-		pattern = '*:o*',
-		callback = function()
-			set_cur_tone(0.70)
-		end,
-	})
-	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
-		group = bsd_cursor_grp,
+		group = cursor_group,
 		pattern = '*:n*',
 		callback = function()
 			set_cur_tone(1.0)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
-		group = bsd_cursor_grp,
+		group = cursor_group,
 		pattern = '*',
 		callback = function()
-			set_cur_tone(0.85)
+			set_cur_tone(0.90)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
-		group = bsd_cursor_grp,
+		group = cursor_group,
 		pattern = '*',
 		callback = function()
 			set_cur_tone(1.0)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
-		group = bsd_cursor_grp,
+		group = cursor_group,
 		pattern = '*',
 		callback = function()
+			if not vim.g.is_raw_tty then
+				pcall(vim.api.nvim_chan_send, vim.v.stderr, '\27[1 q')
+			end
 			pcall(vim.api.nvim_chan_send, vim.v.stderr, '\27]112\7')
 			pcall(function()
 				io.stderr:write('\27]112\7')
