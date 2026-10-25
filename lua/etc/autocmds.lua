@@ -94,19 +94,23 @@ if vim.env.TERM ~= 'linux' and not vim.g.is_raw_tty then
 elseif vim.env.TERM ~= 'linux' then
 	vim.opt.guicursor = ''
 	local bsd_cursor_grp = Nvim.api.nvim_create_augroup('FreeBSDTTYCursor', { clear = true })
-	local function scale_tone(factor)
+	local function scale_tone(alpha)
 		local hl = vim.api.nvim_get_hl(0, { name = 'Cursor' })
 		local col = hl.bg or hl.fg
+		local norm = vim.api.nvim_get_hl(0, { name = 'Normal' })
 		if not col then
-			local norm = vim.api.nvim_get_hl(0, { name = 'Normal' })
-			col = norm.fg or 0xffffff
+			col = norm.fg or (vim.o.background == 'light' and 0x000000 or 0xffffff)
 		end
-		local r = bit.band(bit.rshift(col, 16), 0xff)
-		local g = bit.band(bit.rshift(col, 8), 0xff)
-		local b = bit.band(col, 0xff)
-		local nr = math.min(255, math.max(0, math.floor(r * factor + 0.5)))
-		local ng = math.min(255, math.max(0, math.floor(g * factor + 0.5)))
-		local nb = math.min(255, math.max(0, math.floor(b * factor + 0.5)))
+		local bg = norm.bg or (vim.o.background == 'light' and 0xffffff or 0x000000)
+		local cr = bit.band(bit.rshift(col, 16), 0xff)
+		local cg = bit.band(bit.rshift(col, 8), 0xff)
+		local cb = bit.band(col, 0xff)
+		local br = bit.band(bit.rshift(bg, 16), 0xff)
+		local bg_g = bit.band(bit.rshift(bg, 8), 0xff)
+		local bb = bit.band(bg, 0xff)
+		local nr = math.min(255, math.max(0, math.floor(cr * alpha + br * (1.0 - alpha) + 0.5)))
+		local ng = math.min(255, math.max(0, math.floor(cg * alpha + bg_g * (1.0 - alpha) + 0.5)))
+		local nb = math.min(255, math.max(0, math.floor(cb * alpha + bb * (1.0 - alpha) + 0.5)))
 		return string.format('#%02x%02x%02x', nr, ng, nb)
 	end
 	local function set_cur_tone(factor)
