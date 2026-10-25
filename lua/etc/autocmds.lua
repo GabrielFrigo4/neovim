@@ -94,68 +94,84 @@ if vim.env.TERM ~= 'linux' and not vim.g.is_raw_tty then
 elseif vim.env.TERM ~= 'linux' then
 	vim.opt.guicursor = ''
 	local bsd_cursor_grp = Nvim.api.nvim_create_augroup('FreeBSDTTYCursor', { clear = true })
-	local function set_cur_color(osc, fg, bg)
+	local function scale_tone(factor)
+		local hl = vim.api.nvim_get_hl(0, { name = 'Cursor' })
+		local col = hl.bg or hl.fg
+		if not col then
+			local norm = vim.api.nvim_get_hl(0, { name = 'Normal' })
+			col = norm.fg or 0xffffff
+		end
+		local r = bit.band(bit.rshift(col, 16), 0xff)
+		local g = bit.band(bit.rshift(col, 8), 0xff)
+		local b = bit.band(col, 0xff)
+		local nr = math.min(255, math.max(0, math.floor(r * factor + 0.5)))
+		local ng = math.min(255, math.max(0, math.floor(g * factor + 0.5)))
+		local nb = math.min(255, math.max(0, math.floor(b * factor + 0.5)))
+		return string.format('#%02x%02x%02x', nr, ng, nb)
+	end
+	local function set_cur_tone(factor)
+		local hex = scale_tone(factor)
+		local osc = string.format('\27]12;%s\7', hex)
 		pcall(vim.api.nvim_chan_send, vim.v.stderr, osc)
 		pcall(function()
 			io.stderr:write(osc)
 			io.stderr:flush()
 		end)
-		pcall(vim.api.nvim_set_hl, 0, 'Cursor', { fg = fg, bg = bg })
 	end
 	Nvim.api.nvim_create_autocmd({ 'VimEnter' }, {
 		group = bsd_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur_color('\27]12;#ffffff\7', '#000000', '#ffffff')
+			set_cur_tone(1.0)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = bsd_cursor_grp,
 		pattern = '*:i*',
 		callback = function()
-			set_cur_color('\27]12;#d4d4d4\7', '#000000', '#d4d4d4')
+			set_cur_tone(0.85)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = bsd_cursor_grp,
 		pattern = { '*:r*', '*:R*' },
 		callback = function()
-			set_cur_color('\27]12;#a8a8a8\7', '#000000', '#a8a8a8')
+			set_cur_tone(0.70)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = bsd_cursor_grp,
 		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
 		callback = function()
-			set_cur_color('\27]12;#858585\7', '#ffffff', '#858585')
+			set_cur_tone(0.55)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = bsd_cursor_grp,
 		pattern = '*:o*',
 		callback = function()
-			set_cur_color('\27]12;#a8a8a8\7', '#000000', '#a8a8a8')
+			set_cur_tone(0.70)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = bsd_cursor_grp,
 		pattern = '*:n*',
 		callback = function()
-			set_cur_color('\27]12;#ffffff\7', '#000000', '#ffffff')
+			set_cur_tone(1.0)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'CmdlineEnter' }, {
 		group = bsd_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur_color('\27]12;#e5e5e5\7', '#000000', '#e5e5e5')
+			set_cur_tone(0.85)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
 		group = bsd_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur_color('\27]12;#ffffff\7', '#000000', '#ffffff')
+			set_cur_tone(1.0)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
