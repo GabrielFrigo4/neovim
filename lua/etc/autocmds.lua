@@ -188,12 +188,23 @@ elseif vim.env.TERM ~= 'linux' then
 else
 	vim.opt.guicursor = ''
 	local tty_cursor_grp = Nvim.api.nvim_create_augroup('LinuxTTYCursor', { clear = true })
+	local tty_fd = io.open('/dev/tty', 'w')
 	local function set_cur(code)
-		pcall(vim.api.nvim_chan_send, vim.v.stderr, code)
-		pcall(function()
-			io.stderr:write(code)
-			io.stderr:flush()
-		end)
+		local function emit()
+			if tty_fd then
+				pcall(function()
+					tty_fd:write(code)
+					tty_fd:flush()
+				end)
+			end
+			pcall(function()
+				io.stdout:write(code)
+				io.stdout:flush()
+			end)
+			pcall(vim.api.nvim_chan_send, vim.v.stderr, code)
+		end
+		emit()
+		vim.schedule(emit)
 	end
 	Nvim.api.nvim_create_autocmd({ 'VimEnter' }, {
 		group = tty_cursor_grp,
@@ -269,14 +280,20 @@ else
 		pattern = '*',
 		callback = function()
 			set_cur('\27%G\27[?16;238;0c')
+			if tty_fd then
+				pcall(function()
+					tty_fd:close()
+				end)
+			end
 		end,
 	})
 	local waiting_replace = false
 	vim.on_key(function(key, typed)
+		local m = vim.fn.mode()
 		if waiting_replace then
 			waiting_replace = false
-			set_cur('\27[?6c')
-		elseif vim.fn.mode() == 'n' and typed == 'r' then
+			set_cur(m == 'i' and '\27[?2c' or '\27[?6c')
+		elseif (m == 'n' or m == 'i') and typed == 'r' then
 			waiting_replace = true
 			set_cur('\27[?4c')
 		end

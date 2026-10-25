@@ -25,6 +25,15 @@ vim.g.is_raw_tty = is_raw_tty
 if is_raw_tty then
 	vim.o.ttyfast = false
 	vim.opt.termguicolors = false
+	if term == "linux" and vim.fn.executable("tic") == 1 then
+		local terminfo_path = vim.fs.normalize("~/.terminfo/l/linux")
+		if vim.uv.fs_stat(terminfo_path) == nil then
+			local src = "linux|linux console with sanitized cursor,\n\tcnorm=\\E[?25h,\n\tcvvis=\\E[?25h,\n\tcivis=\\E[?25l,\n\tuse=linux,\n"
+			local out_dir = vim.fs.normalize("~/.terminfo")
+			vim.fn.mkdir(out_dir, "p")
+			vim.fn.system({ "tic", "-o", out_dir, "-" }, src)
+		end
+	end
 end
 
 local source = debug.getinfo(1, "S").source
