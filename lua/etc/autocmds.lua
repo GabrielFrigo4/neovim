@@ -205,7 +205,22 @@ else
 		end
 		emit()
 		vim.schedule(emit)
+		vim.defer_fn(emit, 15)
 	end
+	Nvim.api.nvim_create_autocmd({ 'InsertEnter' }, {
+		group = tty_cursor_grp,
+		pattern = '*',
+		callback = function()
+			set_cur('\27[?2c')
+		end,
+	})
+	Nvim.api.nvim_create_autocmd({ 'InsertLeave' }, {
+		group = tty_cursor_grp,
+		pattern = '*',
+		callback = function()
+			set_cur('\27[?6c')
+		end,
+	})
 	Nvim.api.nvim_create_autocmd({ 'VimEnter' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
@@ -293,7 +308,7 @@ else
 		if waiting_replace then
 			waiting_replace = false
 			set_cur(m == 'i' and '\27[?2c' or '\27[?6c')
-		elseif (m == 'n' or m == 'i') and typed == 'r' then
+		elseif (m == 'n' or m == 'niI') and typed == 'r' then
 			waiting_replace = true
 			set_cur('\27[?4c')
 		end
