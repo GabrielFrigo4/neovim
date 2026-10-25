@@ -130,21 +130,21 @@ if vim.env.TERM ~= 'linux' then
 		group = cursor_group,
 		pattern = '*:i*',
 		callback = function()
-			set_cur_tone(0.95)
+			set_cur_tone(0.92)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = cursor_group,
 		pattern = { '*:r*', '*:R*', '*:o*' },
 		callback = function()
-			set_cur_tone(0.85)
+			set_cur_tone(0.76)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = cursor_group,
 		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
 		callback = function()
-			set_cur_tone(0.80)
+			set_cur_tone(0.68)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
@@ -158,7 +158,7 @@ if vim.env.TERM ~= 'linux' then
 		group = cursor_group,
 		pattern = '*',
 		callback = function()
-			set_cur_tone(0.90)
+			set_cur_tone(0.84)
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
