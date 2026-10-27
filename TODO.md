@@ -29,3 +29,12 @@
 - **Cursor em Bloco Colorido por Modo no TTY:** Transições automáticas de cor de cursor no FreeBSD TTY via OSC 12 no evento `ModeChanged`.
 - **Terminal Embutido & Paleta ANSI 16 Cores:** Configuração das variáveis `terminal_color_*` espelhando a paleta canônica e mapeamentos ergonômicos no modo terminal.
 - **Sincronização:** Total aderência aos 22 Princípios de Engenharia UNIX do Universal Environment.
+
+---
+
+## 📌 Backlog & Próximos Passos
+
+---
+
+> [!TIP]
+> Para detalhes sobre a arquitetura e convenções de engenharia, consulte o [PRINCIPLES.md](PRINCIPLES.md) e o [ENVIRONMENT.md](ENVIRONMENT.md).
