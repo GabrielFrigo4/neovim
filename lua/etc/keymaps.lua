@@ -28,6 +28,19 @@ nrmap('<M-down>', '<C-w><down>')
 nrmap('<M-left>', '<C-w><left>')
 nrmap('<M-right>', '<C-w><right>')
 
+local left_keys = { '<C-Left>', '<Esc>[1;5D', '<Esc>[5D', '\x1b[1;5D', '\x1b[5D' }
+local right_keys = { '<C-Right>', '<Esc>[1;5C', '<Esc>[5C', '\x1b[1;5C', '\x1b[5C' }
+
+for _, key in ipairs(left_keys) do
+	Nvim.keymap.set('n', key, 'b', { noremap = true, silent = true, desc = 'Move backward one word' })
+	Nvim.keymap.set('i', key, '<C-o>b', { noremap = true, silent = true, desc = 'Move backward one word' })
+end
+
+for _, key in ipairs(right_keys) do
+	Nvim.keymap.set('n', key, 'w', { noremap = true, silent = true, desc = 'Move forward one word' })
+	Nvim.keymap.set('i', key, '<C-o>w', { noremap = true, silent = true, desc = 'Move forward one word' })
+end
+
 nrmap('<leader>pi', '<cmd>Lazy install<cr>', 'Lazy Install Plugins')
 nrmap('<leader>pu', '<cmd>Lazy sync<cr>', 'Lazy Sync Plugins')
 nrmap('<leader>urp', '<cmd>UpdateRemotePlugins<cr>', 'Update Remote Plugins')

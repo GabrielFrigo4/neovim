@@ -15,7 +15,24 @@ Nvim.option.mouse = 'a'
 Nvim.option.mousemodel = 'popup'
 
 Nvim.guioption = 'adegmrLT'
-Nvim.option.clipboard:append('unnamed', 'unnamedplus')
+
+local is_raw_tty = vim.g.is_raw_tty == true
+local has_gui_clipboard = not is_raw_tty
+	or vim.env.DISPLAY ~= nil
+	or vim.env.WAYLAND_DISPLAY ~= nil
+	or vim.fn.has('win32') == 1
+	or vim.fn.has('mac') == 1
+	or vim.env.SSH_TTY ~= nil
+
+if has_gui_clipboard then
+	Nvim.option.clipboard:append('unnamed', 'unnamedplus')
+else
+	Nvim.option.clipboard = ''
+end
+
+Nvim.option.ttimeout = true
+Nvim.option.ttimeoutlen = 50
+Nvim.option.timeoutlen = 500
 
 Nvim.option.relativenumber = true
 Nvim.option.inccommand = 'split'
@@ -31,8 +48,6 @@ Nvim.option.tabstop = 4
 
 Nvim.option.smartcase = true
 Nvim.option.encoding = 'UTF-8'
-
-local is_raw_tty = vim.g.is_raw_tty == true
 
 if is_raw_tty then
 	vim.o.ttyfast = false

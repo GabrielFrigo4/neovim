@@ -81,7 +81,6 @@ setExtCmd(tabs, 'set noet ci pi sts=4 sw=4 ts=4')
 -- ================================
 local set_cur_tone
 local set_cur
-local tty_out = io.open('/dev/tty', 'w')
 
 if vim.env.TERM ~= 'linux' then
 	local cursor_group = Nvim.api.nvim_create_augroup('ConfigCursor', { clear = true })
@@ -138,21 +137,7 @@ if vim.env.TERM ~= 'linux' then
 		local hex = scale_tone(factor)
 		local _, bg = resolve_base_colors()
 		pcall(vim.api.nvim_set_hl, 0, 'Cursor', { fg = bg, bg = hex })
-		local osc = string.format('\27]12;%s\7', hex)
-		if tty_out then
-			pcall(function()
-				tty_out:write(osc)
-				tty_out:flush()
-			end)
-		end
-		pcall(function()
-			io.stdout:write(osc)
-			io.stdout:flush()
-		end)
-		pcall(function()
-			io.stderr:write(osc)
-			io.stderr:flush()
-		end)
+		local osc = string.format('\x1b]12;%s\x07', hex)
 		pcall(vim.api.nvim_chan_send, vim.v.stderr, osc)
 	end
 
@@ -179,7 +164,7 @@ if vim.env.TERM ~= 'linux' then
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = cursor_group,
-		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
+		pattern = { '*:v*', '*:V*', '*:\x16*', '*:s*', '*:S*', '*:\x13*' },
 		callback = function()
 			set_cur_tone(0.68)
 		end,
@@ -210,110 +195,77 @@ if vim.env.TERM ~= 'linux' then
 		pattern = '*',
 		callback = function()
 			if not vim.g.is_raw_tty then
-				pcall(vim.api.nvim_chan_send, vim.v.stderr, '\27[1 q')
+				pcall(vim.api.nvim_chan_send, vim.v.stderr, '\x1b[1 q\x1b]112\x07')
 			end
-			local reset_osc = '\27]112\7'
-			if tty_out then
-				pcall(function()
-					tty_out:write(reset_osc)
-					tty_out:flush()
-					tty_out:close()
-				end)
-			end
-			pcall(function()
-				io.stdout:write(reset_osc)
-				io.stdout:flush()
-			end)
-			pcall(function()
-				io.stderr:write(reset_osc)
-				io.stderr:flush()
-			end)
-			pcall(vim.api.nvim_chan_send, vim.v.stderr, reset_osc)
 		end,
 	})
 else
 	vim.opt.guicursor = ''
 	local tty_cursor_grp = Nvim.api.nvim_create_augroup('LinuxTTYCursor', { clear = true })
-	local tty_fd = io.open('/dev/tty', 'w')
 	set_cur = function(code)
-		local function emit()
-			if tty_fd then
-				pcall(function()
-					tty_fd:write(code)
-					tty_fd:flush()
-				end)
-			end
-			pcall(function()
-				io.stdout:write(code)
-				io.stdout:flush()
-			end)
-			pcall(vim.api.nvim_chan_send, vim.v.stderr, code)
-		end
-		emit()
-		vim.schedule(emit)
-		vim.defer_fn(emit, 15)
+		pcall(vim.api.nvim_chan_send, vim.v.stderr, code)
 	end
 	Nvim.api.nvim_create_autocmd({ 'InsertEnter' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur('\27[?2c')
+			set_cur('\x1b[?2c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'InsertLeave' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur('\27[?6c')
+			set_cur('\x1b[?6c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimEnter' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur('\27[?6c')
+			set_cur('\x1b[?6c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
 		pattern = '*:i*',
 		callback = function()
-			set_cur('\27[?2c')
+			set_cur('\x1b[?2c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
 		pattern = { '*:r*', '*:R*' },
 		callback = function()
-			set_cur('\27[?4c')
+			set_cur('\x1b[?4c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
-		pattern = { '*:v*', '*:V*', '*:\22*', '*:s*', '*:S*', '*:\19*' },
+		pattern = { '*:v*', '*:V*', '*:\x16*', '*:s*', '*:S*', '*:\x13*' },
 		callback = function()
-			set_cur('\27[?5c')
+			set_cur('\x1b[?5c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
 		pattern = '*:o*',
 		callback = function()
-			set_cur('\27[?4c')
+			set_cur('\x1b[?4c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'ModeChanged' }, {
 		group = tty_cursor_grp,
 		pattern = '*:n*',
 		callback = function()
-			set_cur('\27[?6c')
+			set_cur('\x1b[?6c')
 		end,
 	})
 	local function set_cmdline_cur()
-		set_cur('\27[?3c')
+		set_cur('\x1b[?3c')
 		vim.defer_fn(function()
 			if vim.fn.getcmdtype() ~= '' then
-				set_cur('\27[?3c')
+				set_cur('\x1b[?3c')
 			end
 		end, 15)
 	end
@@ -326,26 +278,21 @@ else
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur('\27[?3c')
+			set_cur('\x1b[?3c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'CmdlineLeave' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur('\27[?6c')
+			set_cur('\x1b[?6c')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 		group = tty_cursor_grp,
 		pattern = '*',
 		callback = function()
-			set_cur('\27%G\27[?16;238;0c')
-			if tty_fd then
-				pcall(function()
-					tty_fd:close()
-				end)
-			end
+			set_cur('\x1b%G\x1b[?16;238;0c')
 		end,
 	})
 end
@@ -357,24 +304,14 @@ vim.on_key(function(key, typed)
 		waiting_replace = false
 		if vim.env.TERM == 'linux' then
 			if set_cur then
-				set_cur(m == 'i' and '\27[?2c' or '\27[?6c')
+				set_cur(m == 'i' and '\x1b[?2c' or '\x1b[?6c')
 			end
 		else
 			if set_cur_tone then
 				set_cur_tone(m == 'i' and 0.92 or 1.0)
 			end
 			if not vim.g.is_raw_tty then
-				local shape = (m == 'i') and '\27[5 q' or '\27[1 q'
-				if tty_out then
-					pcall(function()
-						tty_out:write(shape)
-						tty_out:flush()
-					end)
-				end
-				pcall(function()
-					io.stdout:write(shape)
-					io.stdout:flush()
-				end)
+				local shape = (m == 'i') and '\x1b[5 q' or '\x1b[1 q'
 				pcall(vim.api.nvim_chan_send, vim.v.stderr, shape)
 			end
 		end
@@ -382,24 +319,14 @@ vim.on_key(function(key, typed)
 		waiting_replace = true
 		if vim.env.TERM == 'linux' then
 			if set_cur then
-				set_cur('\27[?4c')
+				set_cur('\x1b[?4c')
 			end
 		else
 			if set_cur_tone then
 				set_cur_tone(0.76)
 			end
 			if not vim.g.is_raw_tty then
-				local shape = '\27[3 q'
-				if tty_out then
-					pcall(function()
-						tty_out:write(shape)
-						tty_out:flush()
-					end)
-				end
-				pcall(function()
-					io.stdout:write(shape)
-					io.stdout:flush()
-				end)
+				local shape = '\x1b[3 q'
 				pcall(vim.api.nvim_chan_send, vim.v.stderr, shape)
 			end
 		end
@@ -421,16 +348,39 @@ if vim.g.is_raw_tty then
 		group = tty_mouse_grp,
 		pattern = '*',
 		callback = function()
-			pcall(vim.api.nvim_chan_send, vim.v.stderr, '\27[?1000h\27[?1002h\27[?1006h')
+			pcall(vim.api.nvim_chan_send, vim.v.stderr, '\x1b[?1000h\x1b[?1002h\x1b[?1006h')
 		end,
 	})
 	Nvim.api.nvim_create_autocmd({ 'VimLeave', 'VimSuspend' }, {
 		group = tty_mouse_grp,
 		pattern = '*',
 		callback = function()
-			pcall(vim.api.nvim_chan_send, vim.v.stderr, '\27[?1006l\27[?1002l\27[?1000l')
+			pcall(vim.api.nvim_chan_send, vim.v.stderr, '\x1b[?1006l\x1b[?1002l\x1b[?1000l')
 		end,
 	})
+end
+
+local lsp_shutdown_grp = Nvim.api.nvim_create_augroup('ConfigLspShutdown', { clear = true })
+Nvim.api.nvim_create_autocmd('VimLeavePre', {
+	group = lsp_shutdown_grp,
+	pattern = '*',
+	callback = function()
+		for _, client in ipairs(vim.lsp.get_clients()) do
+			pcall(client.stop, true)
+		end
+	end,
+})
+
+local is_pty = false
+local ok_link, link = pcall(vim.uv.fs_readlink, '/proc/self/fd/0')
+if ok_link and link and link:match('/dev/pts/') then
+	is_pty = true
+end
+
+if vim.env.DISPLAY ~= nil or vim.env.WAYLAND_DISPLAY ~= nil or is_pty then
+	vim.env.RAW_TTY = nil
+	vim.env.LC_RAW_TTY = nil
+	vim.env.UNIVERSAL_RAW_TTY = nil
 end
 
 local term_grp = Nvim.api.nvim_create_augroup('ConfigTerminal', { clear = true })
@@ -438,6 +388,11 @@ Nvim.api.nvim_create_autocmd('TermOpen', {
 	group = term_grp,
 	pattern = '*',
 	callback = function()
+		if vim.env.DISPLAY ~= nil or vim.env.WAYLAND_DISPLAY ~= nil or is_pty then
+			vim.env.RAW_TTY = nil
+			vim.env.LC_RAW_TTY = nil
+			vim.env.UNIVERSAL_RAW_TTY = nil
+		end
 		vim.opt_local.number = false
 		vim.opt_local.relativenumber = false
 		vim.opt_local.signcolumn = 'no'
