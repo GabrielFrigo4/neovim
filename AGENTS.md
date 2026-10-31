@@ -32,7 +32,7 @@ O repositório `nvim` provê um ambiente de desenvolvimento modal moderno basead
 
 1. **Fail-Safe & Graceful Degradation:** O carregamento de módulos e plugins DEVE utilizar `pcall` ou checagens seguras para que o Neovim inicialize sem mensagens de erro obstrutivas mesmo em ambientes novos ou sem internet.
 2. **Tema Fallback:** Se `kanagawa` não estiver instalado, o editor deve fazer fallback para `habamax` ou `default` sem lançar erro.
-3. **Taxonomia Tripartite de Comentários:** O código adota estritamente três categorias: 1. Comentários de Sistema = PERMITIDOS (shebangs, pragmas); 2. Comentários Estruturais de 64/32 colunas = PERMITIDOS (cabeçalhos de 64 `-`, seções de 32 caracteres `### ===`, réguas de 64 `=` em `.gitignore`, sem vazamento); 3. Comentários Explicativos/Narrativos = PROIBIDOS em código, configs E blocos de código dentro de Markdowns.
+3. **Taxonomia Tripartite de Comentários:** O código adota estritamente três categorias: 1. Comentários de Sistema = PERMITIDOS (shebangs, pragmas); 2. Comentários Estruturais de 64/32 colunas = PERMITIDOS (cabeçalhos de 64 `-`, seções de 32 colunas `### ===` e `### ---` com títulos em MAIÚSCULO, réguas de 64 `=` em `.gitignore` com títulos em MAIÚSCULO, sem vazamento); 3. Comentários Explicativos/Narrativos = PROIBIDOS em código, configs E blocos de código dentro de Markdowns.
 4. **Zero Secrets:** Tokens e segredos não pertencem ao repositório do Neovim.
 5. **Hermetismo de Produção & Invariante `rm -rf .agents`:** Repositório 100% autônomo. Zero acoplamento de código de produção a `.agents/` ou `skills/` (o editor opera plenamente se `.agents/` for deletado).
 6. **Bancada de Desenvolvimento vs. Runtimes de Produção:** Em produção, o NeoVim reside e opera soberanamente em `~/.config/nvim`. O repositório central `Environment` é exclusivamente uma bancada de desenvolvimento. NUNCA configure links simbólicos ou variáveis que apontem para `~/Documents/Environment/Editor/NeoVim`.
@@ -52,7 +52,7 @@ Se durante a execução de qualquer tarefa (seja criação de novas features, co
 1. **Notificar concisamente** o usuário sobre a divergência encontrada.
 2. **Corrigir imediatamente a inconformidade**, aplicando o padrão canônico correspondente:
     - **Taxonomia Tripartite de Comentários:** Eliminar imediatamente comentários explicativos óbvios em código, configs e blocos de código em Markdowns, preservando exclusivamente comentários de sistema e delimitadores estruturais (64/32 colunas).
-    - **Banners Estruturais:** Ajustar réguas para exatamente 64 hífens no topo ou 32 caracteres com `### ` no corpo (ou 64 `=` em `.gitignore`).
+    - **Banners Estruturais:** Ajustar réguas para exatamente 64 hífens no topo ou 32 caracteres com `### ` no corpo (ou 64 `=` em `.gitignore`), com títulos sempre em MAIÚSCULO.
     - **Portabilidade POSIX:** Substituir bashismos (`[[ ]]`, `&>`, arrays, `source`) por sintaxe estrita POSIX `/bin/sh`.
     - **Shebang Universal:** Garantir sempre `#!/usr/bin/env sh` ou `#!/usr/bin/env python3`.
     - **Sequências ANSI & Escapes:** Eliminar terminantemente octais (`\033`, `\001`) para caracteres ou bytes. Usar `[ -t 1 ] && echo -n $'\e...'` para sequências de escape, notação hexadecimal (`\x01`, `\x1b`) para bytes/controles e fugir de `printf` desnecessário. Notação octal é estritamente aceita apenas onde o sistema operacional a exige nativamente (permissões POSIX: `chmod 0755`, `chmod 0644`, `umask`).
