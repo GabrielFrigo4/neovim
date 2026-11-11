@@ -92,11 +92,15 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\nvim\.git*", "$env:LOCALAPPDATA\n
 
 Quando operado a partir do [Universal Environment](https://github.com/GabrielFrigo4/environment):
 
-```sh
-# Atualizar a suíte de editores com o upstream
-make uped
+Atualizar a suíte de editores com o upstream:
 
-# Implantar o repositório no destino canônico (~/.config/nvim)
+```sh
+make uped
+```
+
+Implantar o repositório no destino canônico (~/.config/nvim):
+
+```sh
 make deploy
 ```
 
