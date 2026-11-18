@@ -371,16 +371,12 @@ Nvim.api.nvim_create_autocmd('VimLeavePre', {
 	end,
 })
 
-local is_pty = false
-local ok_link, link = pcall(vim.uv.fs_readlink, '/proc/self/fd/0')
-if ok_link and link and link:match('/dev/pts/') then
-	is_pty = true
-end
-
-if vim.env.DISPLAY ~= nil or vim.env.WAYLAND_DISPLAY ~= nil or is_pty then
+local has_gui = (vim.env.DISPLAY or '') ~= '' or (vim.env.WAYLAND_DISPLAY or '') ~= ''
+if has_gui or not vim.g.is_raw_tty then
 	vim.env.RAW_TTY = nil
 	vim.env.LC_RAW_TTY = nil
 	vim.env.UNIVERSAL_RAW_TTY = nil
+	vim.env.FORCE_RAW_TTY = nil
 end
 
 local term_grp = Nvim.api.nvim_create_augroup('ConfigTerminal', { clear = true })
@@ -388,10 +384,20 @@ Nvim.api.nvim_create_autocmd('TermOpen', {
 	group = term_grp,
 	pattern = '*',
 	callback = function()
-		if vim.env.DISPLAY ~= nil or vim.env.WAYLAND_DISPLAY ~= nil or is_pty then
+		local gui_active = (vim.env.DISPLAY or '') ~= '' or (vim.env.WAYLAND_DISPLAY or '') ~= ''
+		if vim.g.is_raw_tty and not gui_active then
+			vim.env.RAW_TTY = '1'
+			vim.env.LC_RAW_TTY = '1'
+			vim.env.UNIVERSAL_RAW_TTY = '1'
+			vim.env.FORCE_RAW_TTY = '1'
+			vim.env.COLORTERM = nil
+			vim.env.MICRO_TRUECOLOR = nil
+		else
 			vim.env.RAW_TTY = nil
 			vim.env.LC_RAW_TTY = nil
 			vim.env.UNIVERSAL_RAW_TTY = nil
+			vim.env.FORCE_RAW_TTY = nil
+			vim.env.COLORTERM = 'truecolor'
 		end
 		vim.opt_local.number = false
 		vim.opt_local.relativenumber = false
