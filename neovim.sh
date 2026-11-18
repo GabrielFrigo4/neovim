@@ -7,7 +7,7 @@ set -eu
 _NVIM_ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 _self_heal_perms() {
-	if [ -d "${_NVIM_ROOT}/.git" ] && command -v git > "/dev/null" 2>&1; then
+	if [ -e "${_NVIM_ROOT}/.git" ] && command -v git > "/dev/null" 2>&1; then
 		git -C "${_NVIM_ROOT}" config core.hooksPath .githooks 2> "/dev/null" || true
 	fi
 	if [ -d "${_NVIM_ROOT}/.githooks" ]; then
