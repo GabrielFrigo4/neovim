@@ -35,16 +35,11 @@ Este runbook orienta desenvolvedores e agentes de inteligência artificial na ma
 
 ## 🧪 1. Validação em Modo Headless
 
-Sempre teste a inicialização limpa do NeoVim antes de efetuar commits ou concluir alterações:
+Sempre teste a inicialização limpa do NeoVim pelo `Makefile` canônico, script unificado `./neovim.sh` ou `nvim --headless`:
 
 ```sh
-# Via Makefile canônico
 make test
-
-# Ou via script unificado de componente
 ./neovim.sh test
-
-# Ou diretamente via comando nvim headless
 nvim --headless -u init.lua -c "quit"
 ```
 
@@ -89,14 +84,11 @@ Dentro de uma sessão interativa do NeoVim:
 
 ## 🚀 5. Sincronização & Deploy Soberano
 
-O repositório opera de forma independente ou orquestrado pelo **Universal Environment**:
+O repositório opera de forma independente (clonagem direta para `~/.config/nvim`) ou orquestrado pelo **Universal Environment** (`make uped` atualiza a suíte e `make install` sincroniza os clones):
 
 ```sh
-# A partir do Universal Environment (orquestrador pai)
-make uped    # Atualiza a suite de editores
-make deploy  # Sincroniza clones nos destinos canonicos
-
-# Ou clonagem direta e limpa
+make uped
+make install
 git clone "https://github.com/GabrielFrigo4/neovim.git" "${HOME}/.config/nvim"
 ```
 
